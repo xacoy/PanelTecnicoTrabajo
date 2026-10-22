@@ -206,6 +206,7 @@ input:focus, textarea:focus, button:focus {
     gap: 10px;
     align-items: center;
     justify-content: flex-end;
+    margin-left: auto;
 }
 
 /* Grupo de botones tipo "segmentado" */

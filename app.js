@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.1.1';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -1731,10 +1731,54 @@ const Theme = {
 };
 
 // ============================================
+// MENÚ "MÁS" (⋯)
+// ============================================
+
+const MoreMenu = {
+    init() {
+        const moreMenu = DomUtils.getById('dangerMenu');
+        const btnMenu = DomUtils.getById('btn-menu-danger');
+        const setMenu = (open) => {
+            moreMenu.hidden = !open;
+            btnMenu.setAttribute('aria-expanded', String(open));
+        };
+
+        btnMenu.addEventListener('click', () => setMenu(moreMenu.hidden));
+        moreMenu.addEventListener('click', (e) => {
+            if (e.target.closest('[data-menu-close]')) setMenu(false);
+        });
+        document.addEventListener('click', (e) => {
+            if (!moreMenu.hidden && !btnMenu.contains(e.target) && !moreMenu.contains(e.target)) setMenu(false);
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !moreMenu.hidden) {
+                setMenu(false);
+                btnMenu.focus();
+            }
+        });
+
+        DomUtils.getById('btn-clear-quarter-menu').addEventListener('click', () => Utils.clearQuarter());
+        DomUtils.getById('btn-reset-all-menu').addEventListener('click', () => Utils.resetAll());
+    }
+};
+
+// ============================================
 // INICIALIZACIÓN
 // ============================================
 
+// Un fallo en un componente no debe dejar sin funcionar al resto
+const run = (fn) => {
+    try {
+        fn();
+    } catch (err) {
+        console.error(err);
+    }
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // El menú "⋯" se activa primero, antes de cargar datos
+    run(() => MoreMenu.init());
+
     // Cargar estado global
     State.database = Storage.loadDatabase();
     State.linkData = Storage.loadLinks() || await Storage.loadDefaultLinks();
@@ -1743,74 +1787,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     DomUtils.setText(DomUtils.getById('app-version'), 'v' + APP_VERSION);
 
     // Inicializar componentes
-    LinksManager.render();
-    WidgetsManager.render();
-    QuickNotes.init();
-    TaskManager.initFormHandlers();
-    TaskManager.setTodayDate();
-    TaskManager.setDefaultQuarter();
-    TaskManager.renderRoleSelectors();
-    TaskManager.renderAll();
-    EditModal.init();
-    Layout.init();
-    Theme.init();
-    FieldSizes.initQuickNote();
+    run(() => LinksManager.render());
+    run(() => WidgetsManager.render());
+    run(() => QuickNotes.init());
+    run(() => TaskManager.initFormHandlers());
+    run(() => TaskManager.setTodayDate());
+    run(() => TaskManager.setDefaultQuarter());
+    run(() => TaskManager.renderRoleSelectors());
+    run(() => TaskManager.renderAll());
+    run(() => EditModal.init());
+    run(() => Layout.init());
+    run(() => Theme.init());
+    run(() => FieldSizes.initQuickNote());
 
     // Inicializar modal destructivo
     DangerModal.init();
 
-    // Menú "Más" (⋯)
-    const moreMenu = DomUtils.getById('dangerMenu');
-    const btnMenu = DomUtils.getById('btn-menu-danger');
-    const setMenu = (open) => {
-        moreMenu.hidden = !open;
-        btnMenu.setAttribute('aria-expanded', String(open));
-    };
+    run(() => {
+        // Event listeners para botones globales
+        DomUtils.getById('btn-save-backup').addEventListener('click', () => Backup.exportFull());
+        DomUtils.getById('btn-load-backup').addEventListener('click', () =>
+            DomUtils.getById('global-import-input').click());
+        DomUtils.getById('global-import-input').addEventListener('change', (e) => Backup.import(e));
+        DomUtils.getById('btn-new-note').addEventListener('click', () => WidgetsManager.create('note'));
+        DomUtils.getById('btn-new-todo').addEventListener('click', () => WidgetsManager.create('todo'));
+        DomUtils.getById('btn-reset-layout').addEventListener('click', () => Utils.resetLayout());
+        DomUtils.getById('btn-reload').addEventListener('click', () => location.reload());
+        DomUtils.getById('btn-report-config').addEventListener('click', () => ReportConfig.edit());
 
-    btnMenu.addEventListener('click', () => setMenu(moreMenu.hidden));
-    moreMenu.addEventListener('click', (e) => {
-        if (e.target.closest('[data-menu-close]')) setMenu(false);
+        // Event listeners para gestor
+        DomUtils.getById('btn-export-json').addEventListener('click', () => Backup.exportGestor());
+        DomUtils.getById('btn-print-summary').addEventListener('click', () => PrintManager.generate(false));
+        DomUtils.getById('btn-print-full').addEventListener('click', () => PrintManager.generate(true));
+
+        // Event listeners para modal
+        DomUtils.getById('ins-remote').addEventListener('change', () => TaskManager.updateRemoteFromToggle());
+
+        // Collapsibles
+        Utils.toggleCollapsible('actuaciones-header', 'actuaciones-collapsible', 'actuaciones-toggle-icon', 'actuaciones');
+        Utils.toggleCollapsible('tools-header', 'tools-collapsible', 'tools-toggle-icon', 'tools');
+
+        // Modal overlay click
+        DomUtils.getById('editModalOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'editModalOverlay') EditModal.close();
+        });
+
+        // Widget add button
     });
-    document.addEventListener('click', (e) => {
-        if (!moreMenu.hidden && !btnMenu.contains(e.target) && !moreMenu.contains(e.target)) setMenu(false);
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !moreMenu.hidden) {
-            setMenu(false);
-            btnMenu.focus();
-        }
-    });
-
-    DomUtils.getById('btn-clear-quarter-menu').addEventListener('click', () => Utils.clearQuarter());
-    DomUtils.getById('btn-reset-all-menu').addEventListener('click', () => Utils.resetAll());
-
-    // Event listeners para botones globales
-    DomUtils.getById('btn-save-backup').addEventListener('click', () => Backup.exportFull());
-    DomUtils.getById('btn-load-backup').addEventListener('click', () =>
-        DomUtils.getById('global-import-input').click());
-    DomUtils.getById('global-import-input').addEventListener('change', (e) => Backup.import(e));
-    DomUtils.getById('btn-new-note').addEventListener('click', () => WidgetsManager.create('note'));
-    DomUtils.getById('btn-new-todo').addEventListener('click', () => WidgetsManager.create('todo'));
-    DomUtils.getById('btn-reset-layout').addEventListener('click', () => Utils.resetLayout());
-    DomUtils.getById('btn-reload').addEventListener('click', () => location.reload());
-    DomUtils.getById('btn-report-config').addEventListener('click', () => ReportConfig.edit());
-
-    // Event listeners para gestor
-    DomUtils.getById('btn-export-json').addEventListener('click', () => Backup.exportGestor());
-    DomUtils.getById('btn-print-summary').addEventListener('click', () => PrintManager.generate(false));
-    DomUtils.getById('btn-print-full').addEventListener('click', () => PrintManager.generate(true));
-
-    // Event listeners para modal
-    DomUtils.getById('ins-remote').addEventListener('change', () => TaskManager.updateRemoteFromToggle());
-
-    // Collapsibles
-    Utils.toggleCollapsible('actuaciones-header', 'actuaciones-collapsible', 'actuaciones-toggle-icon', 'actuaciones');
-    Utils.toggleCollapsible('tools-header', 'tools-collapsible', 'tools-toggle-icon', 'tools');
-
-    // Modal overlay click
-    DomUtils.getById('editModalOverlay').addEventListener('click', (e) => {
-        if (e.target.id === 'editModalOverlay') EditModal.close();
-    });
-
-    // Widget add button
 });
