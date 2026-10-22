@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.3.1';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN

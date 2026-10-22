@@ -1083,8 +1083,15 @@ input:focus, textarea:focus, button:focus {
     background: var(--link-color);
 }
 
+/* Tinte tenue en todo el botón; más intenso al pasar el ratón */
+#links-container .category .link-card.has-color {
+    --tint: color-mix(in srgb, var(--link-color) 13%, transparent);
+    background: linear-gradient(var(--tint), var(--tint)), rgba(var(--s2-rgb), 0.6);
+    border-color: color-mix(in srgb, var(--link-color) 35%, transparent);
+}
+
 #links-container .category .link-card.has-color:hover {
-    background: color-mix(in srgb, var(--link-color) 18%, transparent);
+    --tint: color-mix(in srgb, var(--link-color) 32%, transparent);
     border-color: var(--link-color);
     color: var(--text-main);
 }
