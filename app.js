@@ -1768,6 +1768,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     DomUtils.getById('btn-new-note').addEventListener('click', () => WidgetsManager.create('note'));
     DomUtils.getById('btn-new-todo').addEventListener('click', () => WidgetsManager.create('todo'));
     DomUtils.getById('btn-reset-layout').addEventListener('click', () => Utils.resetLayout());
+    DomUtils.getById('btn-reload').addEventListener('click', () => location.reload());
     DomUtils.getById('btn-report-config').addEventListener('click', () => ReportConfig.edit());
 
     // Event listeners para gestor

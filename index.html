@@ -22,40 +22,39 @@
             ⚙️ Panel Técnico
             <span class="badge-gov">V2</span>
         </div>
-        <div class="top-bar-actions" role="toolbar" aria-label="Acciones globales">
-            <div class="view-toggles" role="group" aria-label="Apartados visibles">
-                <button type="button" class="btn-top btn-view active" data-panel-toggle="links" aria-pressed="true" title="Mostrar / ocultar Enlaces">🔗 Enlaces</button>
-                <button type="button" class="btn-top btn-view active" data-panel-toggle="gestor" aria-pressed="true" title="Mostrar / ocultar Gestor de trabajo">📋 Gestor</button>
-                <button type="button" class="btn-top btn-view active" data-panel-toggle="widgets" aria-pressed="true" title="Mostrar / ocultar Notas">📌 Notas</button>
-            </div>
-            <div class="theme-menu">
-                <button type="button" class="btn-top" id="btn-theme" aria-haspopup="true" aria-expanded="false" aria-controls="themePopover" title="Cambiar tema de color">
-                    <span class="theme-swatch" id="theme-current" aria-hidden="true"></span> Tema
-                </button>
-                <div class="theme-popover" id="themePopover" role="radiogroup" aria-label="Tema de color" hidden></div>
-            </div>
-            <div class="toolbar-sep"></div>
-            <button class="btn-top btn-backup-style" id="btn-save-backup" title="Guardar copia de seguridad" aria-label="Guardar backup">
-                💾 Backup
-            </button>
-            <button class="btn-top btn-backup-style" id="btn-load-backup" title="Cargar copia de seguridad anterior" aria-label="Cargar backup">
-                📂 Cargar
-            </button>
-            <input type="file" id="global-import-input" style="display: none;" accept=".json">
 
-            <button class="btn-top" id="btn-new-note" title="Crear nueva nota" aria-label="Nueva nota">
-                📝 Nota
-            </button>
-            <button class="btn-top" id="btn-new-todo" title="Crear nueva lista" aria-label="Nueva lista">
-                ✓ Lista
-            </button>
-            <button class="btn-top" id="btn-reset-layout" title="Restablecer tamaño de paneles" aria-label="Ajustar bloques">
-                ⟨⟩ Reset
-            </button>
-            <div class="toolbar-sep"></div>
-            <button class="btn-top" id="btn-menu-danger" title="Opciones de limpieza" aria-label="Más opciones">
-                ⋯ Más
-            </button>
+        <!-- Centro: apartados visibles -->
+        <div class="tb-group tb-views" role="group" aria-label="Apartados visibles">
+            <button type="button" class="btn-top btn-view active" data-panel-toggle="links" aria-pressed="true" title="Mostrar / ocultar Enlaces">🔗 <span class="tb-text">Enlaces</span></button>
+            <button type="button" class="btn-top btn-view active" data-panel-toggle="gestor" aria-pressed="true" title="Mostrar / ocultar Gestor de trabajo">📋 <span class="tb-text">Gestor</span></button>
+            <button type="button" class="btn-top btn-view active" data-panel-toggle="widgets" aria-pressed="true" title="Mostrar / ocultar Notas">📌 <span class="tb-text">Notas</span></button>
+        </div>
+
+        <!-- Derecha: acciones agrupadas -->
+        <div class="top-bar-actions" role="toolbar" aria-label="Acciones globales">
+            <div class="tb-group" role="group" aria-label="Crear">
+                <button class="btn-top" id="btn-new-note" title="Crear nueva nota" aria-label="Nueva nota">📝 <span class="tb-text">Nota</span></button>
+                <button class="btn-top" id="btn-new-todo" title="Crear nueva lista" aria-label="Nueva lista">✓ <span class="tb-text">Lista</span></button>
+            </div>
+
+            <div class="tb-group" role="group" aria-label="Copia de seguridad">
+                <button class="btn-top" id="btn-save-backup" title="Guardar copia de seguridad" aria-label="Guardar backup">💾 <span class="tb-text">Backup</span></button>
+                <button class="btn-top" id="btn-load-backup" title="Cargar copia de seguridad anterior" aria-label="Cargar backup">📂 <span class="tb-text">Cargar</span></button>
+                <input type="file" id="global-import-input" style="display: none;" accept=".json">
+            </div>
+
+            <div class="tb-group" role="group" aria-label="Vista">
+                <div class="theme-menu">
+                    <button type="button" class="btn-top" id="btn-theme" aria-haspopup="true" aria-expanded="false" aria-controls="themePopover" title="Cambiar tema de color">
+                        <span class="theme-swatch" id="theme-current" aria-hidden="true"></span> <span class="tb-text">Tema</span>
+                    </button>
+                    <div class="theme-popover" id="themePopover" role="radiogroup" aria-label="Tema de color" hidden></div>
+                </div>
+                <button class="btn-top" id="btn-reset-layout" title="Restablecer tamaño de paneles" aria-label="Ajustar bloques">⟨⟩ <span class="tb-text">Reset</span></button>
+                <button class="btn-top" id="btn-reload" title="Recargar la página" aria-label="Recargar la página">🔄 <span class="tb-text">Recargar</span></button>
+            </div>
+
+            <button class="btn-top btn-more" id="btn-menu-danger" title="Opciones de limpieza" aria-label="Más opciones">⋯</button>
         </div>
     </header>
 
