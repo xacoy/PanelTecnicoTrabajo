@@ -16,4 +16,4 @@ El repositorio solo contiene datos de ejemplo.
 
 ## Temas y apartados
 
-Botón **Tema** para elegir entre 18 temas. Los botones Enlaces / Gestor / Notas muestran u ocultan cada apartado.
+Menú **⋯** > Tema de color: 18 temas a elegir. Los botones Enlaces / Gestor / Notas de la barra superior muestran u ocultan cada apartado. La versión aparece junto al título.

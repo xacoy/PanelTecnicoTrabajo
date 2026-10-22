@@ -3,6 +3,8 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
+const APP_VERSION = '2.1.0';
+
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
 // ============================================
@@ -425,6 +427,7 @@ const WidgetsManager = {
             container.appendChild(widgetDiv);
         });
 
+        FieldSizes.fitAll();
         Storage.saveWidgets(State.widgets);
     },
 
@@ -490,11 +493,16 @@ const WidgetsManager = {
                 attrs: { placeholder: 'Escribe aquí tu nota...' }
             });
             if (widget.h) textarea.style.height = widget.h + 'px';
+            else textarea.dataset.auto = '1';
             FieldSizes.observe(textarea, (h) => {
+                delete textarea.dataset.auto;
                 widget.h = h;
                 Storage.saveWidgets(State.widgets);
             });
-            textarea.addEventListener('input', (e) => this.updateNote(idx, e.target.value));
+            textarea.addEventListener('input', (e) => {
+                this.updateNote(idx, e.target.value);
+                if (textarea.dataset.auto === '1') FieldSizes.fit(textarea);
+            });
             content.appendChild(textarea);
         } else if (widget.type === 'todo') {
             const inputDiv = DomUtils.createEl('div', { attrs: { style: 'padding:8px' } });
@@ -509,6 +517,11 @@ const WidgetsManager = {
             inputDiv.appendChild(input);
 
             const list = DomUtils.createEl('ul', { class: 'todo-list' });
+            if (widget.h) list.style.height = widget.h + 'px';
+            FieldSizes.observe(list, (h) => {
+                widget.h = h;
+                Storage.saveWidgets(State.widgets);
+            });
             widget.tasks.forEach((task, ti) => {
                 const item = DomUtils.createEl('li', { class: 'todo-item' });
                 const checkbox = DomUtils.createEl('input', {
@@ -604,6 +617,7 @@ const QuickNotes = {
     init() {
         const area = DomUtils.getById('quick-note-area');
         area.value = Storage.loadQuickNote();
+        if (area.dataset.auto === '1') FieldSizes.fit(area);
 
         DomUtils.getById('btn-copy-note').addEventListener('click', () => this.copy());
         DomUtils.getById('btn-clear-note').addEventListener('click', () => this.clear());
@@ -627,6 +641,7 @@ const QuickNotes = {
         const area = DomUtils.getById('quick-note-area');
         area.value = '';
         this.save('');
+        if (area.dataset.auto === '1') FieldSizes.fit(area);
     }
 };
 
@@ -1216,6 +1231,7 @@ const Backup = {
     exportFull() {
         const backupObject = {
             version: "panel-tecnico-v2",
+            app_version: APP_VERSION,
             timestamp: new Date().toISOString(),
             links: State.linkData,
             widgets: State.widgets,
@@ -1414,33 +1430,72 @@ const Utils = {
 const FieldSizes = {
     QUICK_KEY: 'gob_quick_note_h',
 
-    // Avisa con la nueva altura cuando el usuario redimensiona el campo
-    observe(textarea, onChange) {
+    // Ajusta un textarea a la altura de su texto
+    fit(textarea) {
+        if (!textarea.offsetParent) return; // oculto: se ajusta al mostrarse
+        textarea.style.height = 'auto';
+        const extra = textarea.offsetHeight - textarea.clientHeight;
+        textarea.style.height = (textarea.scrollHeight + extra) + 'px';
+        if (textarea._syncLast) textarea._syncLast(Math.round(textarea.getBoundingClientRect().height));
+    },
+
+    fitAll() {
+        DomUtils.queryAll('textarea[data-auto="1"]').forEach(t => this.fit(t));
+    },
+
+    // Avisa con la nueva altura cuando el usuario redimensiona el campo a mano.
+    // Los cambios de ancho (columnas) solo reajustan los campos automáticos.
+    observe(el, onManual) {
         if (!window.ResizeObserver) return;
         let last = null;
+        let lastW = null;
+        el._syncLast = (h) => { last = h; };
         new ResizeObserver(() => {
-            if (!textarea.offsetParent) return; // oculto (bloque minimizado)
-            const h = Math.round(textarea.getBoundingClientRect().height);
+            if (!el.offsetParent) return; // oculto (bloque minimizado)
+            const rect = el.getBoundingClientRect();
+            const h = Math.round(rect.height);
+            const w = Math.round(rect.width);
             if (last === null) {
                 last = h;
+                lastW = w;
+                return;
+            }
+            if (w !== lastW) {
+                lastW = w;
+                if (el.tagName === 'TEXTAREA' && el.dataset.auto === '1') this.fit(el);
+                else last = h;
                 return;
             }
             if (h <= 0 || Math.abs(h - last) < 2) return;
             last = h;
-            onChange(h);
-        }).observe(textarea);
+            onManual(h);
+        }).observe(el);
     },
 
     initQuickNote() {
         const area = DomUtils.getById('quick-note-area');
         const saved = parseInt(localStorage.getItem(this.QUICK_KEY), 10);
-        if (saved > 0) area.style.height = saved + 'px';
-        this.observe(area, (h) => localStorage.setItem(this.QUICK_KEY, String(h)));
+        if (saved > 0) {
+            area.style.height = saved + 'px';
+        } else {
+            area.dataset.auto = '1';
+            this.fit(area);
+        }
+        area.addEventListener('input', () => {
+            if (area.dataset.auto === '1') this.fit(area);
+        });
+        this.observe(area, (h) => {
+            delete area.dataset.auto;
+            localStorage.setItem(this.QUICK_KEY, String(h));
+        });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.fitAll());
     },
 
     reset() {
         localStorage.removeItem(this.QUICK_KEY);
-        DomUtils.getById('quick-note-area').style.height = '';
+        const area = DomUtils.getById('quick-note-area');
+        area.dataset.auto = '1';
+        this.fit(area);
         State.widgets.forEach(widget => delete widget.h);
         WidgetsManager.render();
     }
@@ -1503,6 +1558,7 @@ const Layout = {
         this.visible = next;
         localStorage.setItem(this.PANELS_KEY, JSON.stringify(this.visible));
         this.apply();
+        FieldSizes.fitAll();
     },
 
     // Reparte el espacio: el Gestor ocupa el sobrante; si está oculto, lo hace el primer panel visible
@@ -1624,9 +1680,9 @@ const Theme = {
     },
 
     build() {
-        const pop = DomUtils.getById('themePopover');
+        const container = DomUtils.getById('themeGrid');
         this.GROUPS.forEach(group => {
-            pop.appendChild(DomUtils.createEl('div', { class: 'theme-group-label', text: group.label }));
+            container.appendChild(DomUtils.createEl('div', { class: 'theme-group-label', text: group.label }));
             const grid = DomUtils.createEl('div', { class: 'theme-grid' });
             group.themes.forEach(([id, name, sw1, sw2]) => {
                 const btn = DomUtils.createEl('button', {
@@ -1638,38 +1694,15 @@ const Theme = {
                 sw.style.setProperty('--sw2', sw2);
                 btn.appendChild(sw);
                 btn.appendChild(DomUtils.createEl('span', { text: name }));
-                btn.addEventListener('click', () => {
-                    this.apply(id);
-                    this.togglePopover(false);
-                });
+                btn.addEventListener('click', () => this.apply(id));
                 grid.appendChild(btn);
             });
-            pop.appendChild(grid);
+            container.appendChild(grid);
         });
-    },
-
-    togglePopover(open) {
-        const pop = DomUtils.getById('themePopover');
-        const btn = DomUtils.getById('btn-theme');
-        pop.hidden = !open;
-        btn.setAttribute('aria-expanded', String(open));
     },
 
     init() {
         this.build();
-
-        const btn = DomUtils.getById('btn-theme');
-        const pop = DomUtils.getById('themePopover');
-        btn.addEventListener('click', () => this.togglePopover(pop.hidden));
-        document.addEventListener('click', (e) => {
-            if (!pop.hidden && !pop.contains(e.target) && !btn.contains(e.target)) this.togglePopover(false);
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !pop.hidden) {
-                this.togglePopover(false);
-                btn.focus();
-            }
-        });
 
         let saved = this.DEFAULT;
         try {
@@ -1689,12 +1722,6 @@ const Theme = {
             btn.setAttribute('aria-checked', String(on));
         });
 
-        const [, label, sw1, sw2] = themes.find(t => t[0] === name);
-        const current = DomUtils.getById('theme-current');
-        current.style.setProperty('--sw1', sw1);
-        current.style.setProperty('--sw2', sw2);
-        DomUtils.getById('btn-theme').title = 'Tema: ' + label;
-
         if (persist) {
             try {
                 localStorage.setItem(this.KEY, name);
@@ -1713,6 +1740,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     State.linkData = Storage.loadLinks() || await Storage.loadDefaultLinks();
     State.widgets = Storage.loadWidgets();
 
+    DomUtils.setText(DomUtils.getById('app-version'), 'v' + APP_VERSION);
+
     // Inicializar componentes
     LinksManager.render();
     WidgetsManager.render();
@@ -1730,35 +1759,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Inicializar modal destructivo
     DangerModal.init();
 
-    // Menú peligroso
-    let dangerMenuOpen = false;
-    const dangerMenu = DomUtils.getById('dangerMenu');
-    const btnMenuDanger = DomUtils.getById('btn-menu-danger');
+    // Menú "Más" (⋯)
+    const moreMenu = DomUtils.getById('dangerMenu');
+    const btnMenu = DomUtils.getById('btn-menu-danger');
+    const setMenu = (open) => {
+        moreMenu.hidden = !open;
+        btnMenu.setAttribute('aria-expanded', String(open));
+    };
 
-    btnMenuDanger.addEventListener('click', () => {
-        dangerMenuOpen = !dangerMenuOpen;
-        dangerMenu.style.display = dangerMenuOpen ? 'block' : 'none';
+    btnMenu.addEventListener('click', () => setMenu(moreMenu.hidden));
+    moreMenu.addEventListener('click', (e) => {
+        if (e.target.closest('[data-menu-close]')) setMenu(false);
     });
-
-    DomUtils.getById('btn-clear-quarter-menu').addEventListener('click', () => {
-        dangerMenuOpen = false;
-        dangerMenu.style.display = 'none';
-        Utils.clearQuarter();
-    });
-
-    DomUtils.getById('btn-reset-all-menu').addEventListener('click', () => {
-        dangerMenuOpen = false;
-        dangerMenu.style.display = 'none';
-        Utils.resetAll();
-    });
-
-    // Cerrar menú al hacer click fuera
     document.addEventListener('click', (e) => {
-        if (!btnMenuDanger.contains(e.target) && !dangerMenu.contains(e.target)) {
-            dangerMenuOpen = false;
-            dangerMenu.style.display = 'none';
+        if (!moreMenu.hidden && !btnMenu.contains(e.target) && !moreMenu.contains(e.target)) setMenu(false);
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !moreMenu.hidden) {
+            setMenu(false);
+            btnMenu.focus();
         }
     });
+
+    DomUtils.getById('btn-clear-quarter-menu').addEventListener('click', () => Utils.clearQuarter());
+    DomUtils.getById('btn-reset-all-menu').addEventListener('click', () => Utils.resetAll());
 
     // Event listeners para botones globales
     DomUtils.getById('btn-save-backup').addEventListener('click', () => Backup.exportFull());
@@ -1789,5 +1813,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Widget add button
-    DomUtils.getById('btn-add-widget').addEventListener('click', () => WidgetsManager.create('note'));
 });

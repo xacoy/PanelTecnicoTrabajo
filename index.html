@@ -20,41 +20,38 @@
     <header class="global-top-bar" role="banner">
         <div class="global-title">
             ⚙️ Panel Técnico
-            <span class="badge-gov">V2</span>
+            <span class="badge-gov" id="app-version" title="Versión">v2.1.0</span>
         </div>
 
-        <!-- Centro: apartados visibles -->
-        <div class="tb-group tb-views" role="group" aria-label="Apartados visibles">
-            <button type="button" class="btn-top btn-view active" data-panel-toggle="links" aria-pressed="true" title="Mostrar / ocultar Enlaces">🔗 <span class="tb-text">Enlaces</span></button>
-            <button type="button" class="btn-top btn-view active" data-panel-toggle="gestor" aria-pressed="true" title="Mostrar / ocultar Gestor de trabajo">📋 <span class="tb-text">Gestor</span></button>
-            <button type="button" class="btn-top btn-view active" data-panel-toggle="widgets" aria-pressed="true" title="Mostrar / ocultar Notas">📌 <span class="tb-text">Notas</span></button>
-        </div>
-
-        <!-- Derecha: acciones agrupadas -->
         <div class="top-bar-actions" role="toolbar" aria-label="Acciones globales">
-            <div class="tb-group" role="group" aria-label="Crear">
-                <button class="btn-top" id="btn-new-note" title="Crear nueva nota" aria-label="Nueva nota">📝 <span class="tb-text">Nota</span></button>
-                <button class="btn-top" id="btn-new-todo" title="Crear nueva lista" aria-label="Nueva lista">✓ <span class="tb-text">Lista</span></button>
+            <div class="tb-group tb-views" role="group" aria-label="Apartados visibles">
+                <button type="button" class="btn-top btn-view active" data-panel-toggle="links" aria-pressed="true" title="Mostrar / ocultar Enlaces">🔗 <span class="tb-text">Enlaces</span></button>
+                <button type="button" class="btn-top btn-view active" data-panel-toggle="gestor" aria-pressed="true" title="Mostrar / ocultar Gestor de trabajo">📋 <span class="tb-text">Gestor</span></button>
+                <button type="button" class="btn-top btn-view active" data-panel-toggle="widgets" aria-pressed="true" title="Mostrar / ocultar Notas">📌 <span class="tb-text">Notas</span></button>
             </div>
 
-            <div class="tb-group" role="group" aria-label="Copia de seguridad">
-                <button class="btn-top" id="btn-save-backup" title="Guardar copia de seguridad" aria-label="Guardar backup">💾 <span class="tb-text">Backup</span></button>
-                <button class="btn-top" id="btn-load-backup" title="Cargar copia de seguridad anterior" aria-label="Cargar backup">📂 <span class="tb-text">Cargar</span></button>
-                <input type="file" id="global-import-input" style="display: none;" accept=".json">
-            </div>
-
-            <div class="tb-group" role="group" aria-label="Vista">
-                <div class="theme-menu">
-                    <button type="button" class="btn-top" id="btn-theme" aria-haspopup="true" aria-expanded="false" aria-controls="themePopover" title="Cambiar tema de color">
-                        <span class="theme-swatch" id="theme-current" aria-hidden="true"></span> <span class="tb-text">Tema</span>
-                    </button>
-                    <div class="theme-popover" id="themePopover" role="radiogroup" aria-label="Tema de color" hidden></div>
-                </div>
-                <button class="btn-top" id="btn-reset-layout" title="Restablecer tamaño de paneles" aria-label="Ajustar bloques">⟨⟩ <span class="tb-text">Reset</span></button>
+            <div class="tb-group" role="group" aria-label="Página">
                 <button class="btn-top" id="btn-reload" title="Recargar la página" aria-label="Recargar la página">🔄 <span class="tb-text">Recargar</span></button>
-            </div>
+                <div class="more-wrap">
+                    <button class="btn-top btn-more" id="btn-menu-danger" aria-haspopup="true" aria-expanded="false" aria-controls="dangerMenu" title="Más opciones" aria-label="Más opciones">⋯</button>
+                    <div id="dangerMenu" class="more-menu" hidden>
+                        <div class="menu-label">Datos</div>
+                        <button type="button" class="menu-item" id="btn-save-backup" data-menu-close>💾 Guardar copia de seguridad</button>
+                        <button type="button" class="menu-item" id="btn-load-backup" data-menu-close>📂 Cargar copia de seguridad</button>
+                        <input type="file" id="global-import-input" style="display: none;" accept=".json">
 
-            <button class="btn-top btn-more" id="btn-menu-danger" title="Opciones de limpieza" aria-label="Más opciones">⋯</button>
+                        <div class="menu-label">Tema de color</div>
+                        <div id="themeGrid" role="radiogroup" aria-label="Tema de color"></div>
+
+                        <div class="menu-label">Vista</div>
+                        <button type="button" class="menu-item" id="btn-reset-layout" data-menu-close>⟨⟩ Restablecer tamaños de paneles y campos</button>
+
+                        <div class="menu-label menu-label-danger">Zona de peligro</div>
+                        <button type="button" class="menu-item danger" id="btn-clear-quarter-menu" data-menu-close>🗑️ Borrar trimestre actual</button>
+                        <button type="button" class="menu-item danger" id="btn-reset-all-menu" data-menu-close>⚠️ Limpiar todo</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -186,8 +183,9 @@
         <aside class="widgets-col" id="colWidgets" role="complementary" aria-label="Notas y listas">
             <div class="block-header">
                 <h2>📌 Notas</h2>
-                <div class="header-actions">
-                    <button class="btn-action-icon" id="btn-add-widget" title="Crear nueva nota" aria-label="Nueva nota">➕</button>
+                <div class="header-actions notes-actions">
+                    <button type="button" class="btn-top btn-compact" id="btn-new-note" title="Crear nueva nota" aria-label="Nueva nota">📝 Nota</button>
+                    <button type="button" class="btn-top btn-compact" id="btn-new-todo" title="Crear nueva lista" aria-label="Nueva lista">✓ Lista</button>
                 </div>
             </div>
 
@@ -240,16 +238,6 @@
                 <button type="button" class="btn-top btn-backup-style" id="btn-modal-save">💾 Guardar</button>
             </div>
         </div>
-    </div>
-
-    <!-- MENÚ DE OPCIONES -->
-    <div id="dangerMenu" class="danger-menu" style="display: none;">
-        <button type="button" class="danger-menu-item" id="btn-clear-quarter-menu">
-            🗑️ Borrar Trimestre Actual
-        </button>
-        <button type="button" class="danger-menu-item" id="btn-reset-all-menu">
-            ⚠️ LIMPIAR TODO
-        </button>
     </div>
 
     <!-- MODAL DE CONFIRMACIÓN DESTRUCTIVA -->
