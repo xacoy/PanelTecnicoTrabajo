@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.1.3';
+const APP_VERSION = '2.2.0';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -1682,51 +1682,68 @@ const Theme = {
     KEY: 'gob_theme_v1',
     DEFAULT: 'dark',
 
-    // id, nombre, color de fondo y color de acento (para la muestra)
-    GROUPS: [
-        {
-            label: 'Oscuros',
-            themes: [
-                ['dark', 'Noche', '#0f1419', '#3b82f6'],
-                ['midnight', 'Medianoche', '#0c1230', '#6366f1'],
-                ['ocean', 'Océano', '#0a1e2e', '#0ea5e9'],
-                ['forest', 'Bosque', '#0b1b12', '#22c55e'],
-                ['sunset', 'Atardecer', '#1f130c', '#f97316'],
-                ['violet', 'Violeta', '#150d24', '#a855f7'],
-                ['nord', 'Nord', '#2e3440', '#88c0d0'],
-                ['dracula', 'Drácula', '#282a36', '#bd93f9'],
-                ['solarized', 'Solarized', '#002b36', '#268bd2'],
-                ['gruvbox', 'Gruvbox', '#282828', '#fabd2f'],
-                ['ruby', 'Rubí', '#1c0b11', '#e11d48'],
-                ['coffee', 'Café', '#1d1611', '#d4a373'],
-                ['graphite', 'Grafito', '#141416', '#e4e4e7']
-            ]
-        },
-        {
-            label: 'Claros',
-            themes: [
-                ['light', 'Claro', '#ffffff', '#2563eb'],
-                ['sky', 'Cielo', '#ffffff', '#0284c7'],
-                ['mint', 'Menta', '#ffffff', '#0d9488'],
-                ['sakura', 'Sakura', '#ffffff', '#db2777'],
-                ['sand', 'Arena', '#fffdf8', '#b45309']
-            ]
-        }
+    // Cada familia tiene versión oscura y clara: [id, nombre, color de fondo, color de acento].
+    // Grafito solo existe en oscuro.
+    FAMILIES: [
+        { dark: ['dark', 'Noche', '#0f1419', '#3b82f6'], light: ['light', 'Claro', '#ffffff', '#2563eb'] },
+        { dark: ['midnight', 'Medianoche', '#0c1230', '#6366f1'], light: ['midnight-light', 'Medianoche', '#ffffff', '#4f46e5'] },
+        { dark: ['ocean', 'Océano', '#0a1e2e', '#0ea5e9'], light: ['ocean-light', 'Océano', '#ffffff', '#0e7490'] },
+        { dark: ['sky-dark', 'Cielo', '#0d1e2e', '#38bdf8'], light: ['sky', 'Cielo', '#ffffff', '#0284c7'] },
+        { dark: ['forest', 'Bosque', '#0b1b12', '#22c55e'], light: ['forest-light', 'Bosque', '#ffffff', '#15803d'] },
+        { dark: ['mint-dark', 'Menta', '#0b1f1a', '#2dd4bf'], light: ['mint', 'Menta', '#ffffff', '#0d9488'] },
+        { dark: ['sunset', 'Atardecer', '#1f130c', '#f97316'], light: ['sunset-light', 'Atardecer', '#ffffff', '#c2410c'] },
+        { dark: ['violet', 'Violeta', '#150d24', '#a855f7'], light: ['violet-light', 'Violeta', '#ffffff', '#7e22ce'] },
+        { dark: ['sakura-dark', 'Sakura', '#240b1b', '#f472b6'], light: ['sakura', 'Sakura', '#ffffff', '#db2777'] },
+        { dark: ['ruby', 'Rubí', '#1c0b11', '#e11d48'], light: ['ruby-light', 'Rubí', '#ffffff', '#be123c'] },
+        { dark: ['nord', 'Nord', '#2e3440', '#88c0d0'], light: ['nord-light', 'Nord', '#ffffff', '#506f99'] },
+        { dark: ['dracula', 'Drácula', '#282a36', '#bd93f9'], light: ['dracula-light', 'Drácula', '#fffdf6', '#644ac9'] },
+        { dark: ['solarized', 'Solarized', '#002b36', '#268bd2'], light: ['solarized-light', 'Solarized', '#fdf6e3', '#1f78b4'] },
+        { dark: ['gruvbox', 'Gruvbox', '#282828', '#fabd2f'], light: ['gruvbox-light', 'Gruvbox', '#fbf1c7', '#9a6210'] },
+        { dark: ['coffee', 'Café', '#1d1611', '#d4a373'], light: ['coffee-light', 'Café', '#fffaf4', '#8a5a2b'] },
+        { dark: ['sand-dark', 'Arena', '#1e1810', '#f59e0b'], light: ['sand', 'Arena', '#fffdf8', '#b45309'] },
+        { dark: ['graphite', 'Grafito', '#141416', '#e4e4e7'], light: null }
     ],
 
+    mode: 'dark',
+
     all() {
-        return this.GROUPS.flatMap(g => g.themes);
+        return this.FAMILIES.flatMap(f => [f.dark, f.light].filter(Boolean));
+    },
+
+    familyOf(id) {
+        return this.FAMILIES.find(f => (f.dark && f.dark[0] === id) || (f.light && f.light[0] === id));
+    },
+
+    modeOf(id) {
+        const family = this.familyOf(id);
+        return family && family.light && family.light[0] === id ? 'light' : 'dark';
     },
 
     build() {
         const container = DomUtils.getById('themeGrid');
-        this.GROUPS.forEach(group => {
-            container.appendChild(DomUtils.createEl('div', { class: 'theme-group-label', text: group.label }));
-            const grid = DomUtils.createEl('div', { class: 'theme-grid' });
-            group.themes.forEach(([id, name, sw1, sw2]) => {
+        const mode = DomUtils.createEl('div', { class: 'theme-mode', attrs: { role: 'radiogroup', 'aria-label': 'Modo de color' } });
+        [['dark', '🌙 Oscuro'], ['light', '☀️ Claro']].forEach(([value, label]) => {
+            const btn = DomUtils.createEl('button', {
+                class: 'theme-mode-btn',
+                text: label,
+                attrs: { type: 'button', role: 'radio', 'aria-checked': 'false', 'data-theme-mode': value }
+            });
+            btn.addEventListener('click', () => this.setMode(value));
+            mode.appendChild(btn);
+        });
+        container.appendChild(mode);
+        const grid = DomUtils.createEl('div', { class: 'theme-grid', id: 'themeOptions' });
+        ['dark', 'light'].forEach(modeName => {
+            this.FAMILIES.forEach(family => {
+                const entry = family[modeName];
+                if (!entry) return;
+                const [id, name, sw1, sw2] = entry;
                 const btn = DomUtils.createEl('button', {
                     class: 'theme-option',
-                    attrs: { type: 'button', role: 'radio', 'aria-checked': 'false', 'data-theme-option': id, title: name }
+                    attrs: {
+                        type: 'button', role: 'radio', 'aria-checked': 'false',
+                        'data-theme-option': id, 'data-theme-for': modeName, title: name
+                    }
                 });
                 const sw = DomUtils.createEl('span', { class: 'theme-swatch', attrs: { 'aria-hidden': 'true' } });
                 sw.style.setProperty('--sw1', sw1);
@@ -1736,8 +1753,23 @@ const Theme = {
                 btn.addEventListener('click', () => this.apply(id));
                 grid.appendChild(btn);
             });
-            container.appendChild(grid);
         });
+        container.appendChild(grid);
+    },
+
+    // Todas las opciones existen siempre; solo se muestran las del modo activo
+    renderOptions() {
+        DomUtils.queryAll('[data-theme-option]').forEach(btn => {
+            btn.hidden = btn.dataset.themeFor !== this.mode;
+        });
+    },
+
+    // Cambia entre oscuro y claro conservando la familia de colores
+    setMode(mode) {
+        const current = document.documentElement.getAttribute('data-theme') || this.DEFAULT;
+        const family = this.familyOf(current);
+        const target = family && family[mode] ? family[mode][0] : (mode === 'light' ? 'light' : 'dark');
+        this.apply(target);
     },
 
     init() {
@@ -1751,12 +1783,19 @@ const Theme = {
     },
 
     apply(name, persist = true) {
-        const themes = this.all();
-        if (!themes.some(t => t[0] === name)) name = this.DEFAULT;
+        if (!this.all().some(t => t[0] === name)) name = this.DEFAULT;
 
+        this.mode = this.modeOf(name);
         document.documentElement.setAttribute('data-theme', name);
+        this.renderOptions();
+
         DomUtils.queryAll('[data-theme-option]').forEach(btn => {
             const on = btn.dataset.themeOption === name;
+            btn.classList.toggle('active', on);
+            btn.setAttribute('aria-checked', String(on));
+        });
+        DomUtils.queryAll('[data-theme-mode]').forEach(btn => {
+            const on = btn.dataset.themeMode === this.mode;
             btn.classList.toggle('active', on);
             btn.setAttribute('aria-checked', String(on));
         });
