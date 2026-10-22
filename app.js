@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.1.1';
+const APP_VERSION = '2.1.2';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -525,14 +525,16 @@ const WidgetsManager = {
             widget.tasks.forEach((task, ti) => {
                 const item = DomUtils.createEl('li', { class: 'todo-item' });
                 const checkbox = DomUtils.createEl('input', {
-                    attrs: { type: 'checkbox', checked: task.d ? 'checked' : '' }
+                    attrs: { type: 'checkbox', 'aria-label': 'Marcar como hecha' }
                 });
+                checkbox.checked = !!task.d;
                 checkbox.addEventListener('change', () => this.toggleTask(idx, ti));
 
                 const text = DomUtils.createEl('span', {
                     class: `todo-text ${task.d ? 'done' : ''}`,
                     text: task.t
                 });
+                text.addEventListener('click', () => this.toggleTask(idx, ti));
 
                 const btnDel = DomUtils.createEl('span', {
                     text: '✕',

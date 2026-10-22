@@ -1583,9 +1583,15 @@ table.records-table tbody tr.record-row:hover td {
     word-break: break-word;
 }
 
+.todo-text {
+    cursor: pointer;
+}
+
 .todo-text.done {
     text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
     color: var(--text-dim);
+    opacity: 0.7;
 }
 
 /* ============================================
