@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel Técnico de Gestión Diaria v2">
+    <title>Panel Técnico - Gestor Diario</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>⚙️</text></svg>">
+    <script>
+        // Aplica el tema guardado antes de pintar para evitar parpadeos
+        try {
+            var savedTheme = localStorage.getItem('gob_theme_v1');
+            if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+        } catch (e) {}
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- BARRA SUPERIOR -->
+    <header class="global-top-bar" role="banner">
+        <div class="global-title">
+            ⚙️ Panel Técnico
+            <span class="badge-gov">V2</span>
+        </div>
+        <div class="top-bar-actions" role="toolbar" aria-label="Acciones globales">
+            <div class="view-toggles" role="group" aria-label="Apartados visibles">
+                <button type="button" class="btn-top btn-view active" data-panel-toggle="links" aria-pressed="true" title="Mostrar / ocultar Enlaces">🔗 Enlaces</button>
+                <button type="button" class="btn-top btn-view active" data-panel-toggle="gestor" aria-pressed="true" title="Mostrar / ocultar Gestor de trabajo">📋 Gestor</button>
+                <button type="button" class="btn-top btn-view active" data-panel-toggle="widgets" aria-pressed="true" title="Mostrar / ocultar Notas">📌 Notas</button>
+            </div>
+            <div class="theme-menu">
+                <button type="button" class="btn-top" id="btn-theme" aria-haspopup="true" aria-expanded="false" aria-controls="themePopover" title="Cambiar tema de color">
+                    <span class="theme-swatch" id="theme-current" aria-hidden="true"></span> Tema
+                </button>
+                <div class="theme-popover" id="themePopover" role="radiogroup" aria-label="Tema de color" hidden></div>
+            </div>
+            <div class="toolbar-sep"></div>
+            <button class="btn-top btn-backup-style" id="btn-save-backup" title="Guardar copia de seguridad" aria-label="Guardar backup">
+                💾 Backup
+            </button>
+            <button class="btn-top btn-backup-style" id="btn-load-backup" title="Cargar copia de seguridad anterior" aria-label="Cargar backup">
+                📂 Cargar
+            </button>
+            <input type="file" id="global-import-input" style="display: none;" accept=".json">
+
+            <button class="btn-top" id="btn-new-note" title="Crear nueva nota" aria-label="Nueva nota">
+                📝 Nota
+            </button>
+            <button class="btn-top" id="btn-new-todo" title="Crear nueva lista" aria-label="Nueva lista">
+                ✓ Lista
+            </button>
+            <button class="btn-top" id="btn-reset-layout" title="Restablecer tamaño de paneles" aria-label="Ajustar bloques">
+                ⟨⟩ Reset
+            </button>
+            <div class="toolbar-sep"></div>
+            <button class="btn-top" id="btn-menu-danger" title="Opciones de limpieza" aria-label="Más opciones">
+                ⋯ Más
+            </button>
+        </div>
+    </header>
+
+    <!-- WORKSPACE SPLIT (3 COLUMNAS) -->
+    <main class="workspace-split" id="workspaceContainer" role="main">
+
+        <!-- COLUMNA 1: ENLACES -->
+        <section class="links-col" id="colLinks" role="navigation" aria-label="Enlaces útiles">
+            <div class="block-header">
+                <h2>🔗 Enlaces</h2>
+                <span class="block-badge" id="categories-count">5 Categorías</span>
+            </div>
+            <div class="links-grid" id="links-container" role="list"></div>
+        </section>
+
+        <div class="resizer-handle" id="resizer1" role="separator" aria-label="Ajustador de tamaño"></div>
+
+        <!-- COLUMNA 2: GESTOR DE TRABAJO -->
+        <section class="gestor-col" id="colGestor" role="region" aria-label="Gestor de trabajo">
+            <div class="block-header">
+                <h2>📋 Gestor de Trabajo</h2>
+                <span class="block-badge">V2 ✨</span>
+            </div>
+
+            <!-- FORMULARIO -->
+            <form class="form-card" id="main-form" aria-label="Formulario de registro">
+                <div class="form-row date-quarter-row">
+                    <div class="form-col date-form-col">
+                        <label for="ins-date">📅 Fecha</label>
+                        <input type="date" id="ins-date" required aria-label="Fecha de la actuación">
+                    </div>
+                    <div class="form-col quarter-form-col">
+                        <div class="selector-clicks" id="sel-quarter" role="group" aria-label="Trimestre">
+                            <button type="button" class="clickable-option active" data-quarter="1" aria-pressed="true">Q1</button>
+                            <button type="button" class="clickable-option" data-quarter="2" aria-pressed="false">Q2</button>
+                            <button type="button" class="clickable-option" data-quarter="3" aria-pressed="false">Q3</button>
+                            <button type="button" class="clickable-option" data-quarter="4" aria-pressed="false">Q4</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row task-role-row">
+                    <div class="selector-clicks" id="sel-type" role="group" aria-label="Tipo">
+                        <button type="button" class="clickable-option active" data-type="incidencia" aria-pressed="true">🔴 Inc</button>
+                        <button type="button" class="clickable-option" data-type="peticion" aria-pressed="false">🟠 Pet</button>
+                        <button type="button" class="clickable-option" data-type="explotacion" aria-pressed="false">🟢 Exp</button>
+                    </div>
+                    <div class="selector-clicks" id="sel-role" role="group" aria-label="Rol"></div>
+                </div>
+
+                <div class="form-row ticket-tt-row">
+                    <input type="text" id="ins-id" placeholder="#Ticket ó ID" aria-label="Número de ticket">
+                    <div class="tt-toggle-wrap" role="region" aria-label="Tipo de trabajo">
+                        <input type="checkbox" id="ins-remote" class="tt-checkbox">
+                        <label class="tt-switch" for="ins-remote" title="Presencial / Teletrabajo">
+                            <span class="tt-state tt-off">PR</span>
+                            <span class="tt-state tt-on">TT</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <input type="text" id="ins-desc" placeholder="Descripción..." aria-label="Descripción">
+                </div>
+
+                <button type="submit" class="btn-add">➕ GUARDAR</button>
+            </form>
+
+            <!-- ACTUACIONES -->
+            <div class="actuaciones-section">
+                <button class="manager-header" id="actuaciones-header" aria-expanded="true" aria-controls="actuaciones-collapsible">
+                    <div class="manager-header-left">
+                        <span class="toggle-icon" id="actuaciones-toggle-icon">▼</span>
+                        <h2>📊 ACTUACIONES</h2>
+                        <span class="counter-badge" id="records-count">0</span>
+                    </div>
+                </button>
+                <div id="actuaciones-collapsible" class="collapsible-content">
+                    <div class="table-scroll">
+                        <table class="records-table" id="table-body-zone" role="grid">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 12%;">Fecha</th>
+                                    <th scope="col" style="width: 10%;">Tipo</th>
+                                    <th scope="col" style="width: 12%;">Rol</th>
+                                    <th scope="col" style="width: 14%;">Ticket</th>
+                                    <th scope="col">Descripción</th>
+                                    <th scope="col" style="width: 10%; text-align:center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HERRAMIENTAS -->
+            <div class="tools-box">
+                <button class="manager-header" id="tools-header" aria-expanded="false" aria-controls="tools-collapsible">
+                    <div class="manager-header-left">
+                        <span class="toggle-icon" id="tools-toggle-icon">▶</span>
+                        <h2>⚙️ HERRAMIENTAS</h2>
+                    </div>
+                </button>
+                <div id="tools-collapsible" class="collapsible-content collapsed">
+                    <div class="tools-content">
+                        <div class="tools-group">
+                            <button type="button" class="btn-tool" id="btn-report-config" title="Nombre, unidad y localidad del informe impreso">
+                                👤 Datos del informe
+                            </button>
+                            <button type="button" class="btn-tool" id="btn-export-json">
+                                📥 Exportar
+                            </button>
+                            <button type="button" class="btn-tool btn-tool-print" id="btn-print-summary">
+                                🖨️ Resumen
+                            </button>
+                            <button type="button" class="btn-tool btn-tool-print" id="btn-print-full">
+                                📄 Completo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="resizer-handle" id="resizer2" role="separator" aria-label="Ajustador de tamaño"></div>
+
+        <!-- COLUMNA 3: WIDGETS -->
+        <aside class="widgets-col" id="colWidgets" role="complementary" aria-label="Notas y listas">
+            <div class="block-header">
+                <h2>📌 Notas</h2>
+                <div class="header-actions">
+                    <button class="btn-action-icon" id="btn-add-widget" title="Crear nueva nota" aria-label="Nueva nota">➕</button>
+                </div>
+            </div>
+
+            <div class="quick-note-box">
+                <div class="quick-note-header">
+                    <span class="quick-note-title">📝 Bloc Rápido</span>
+                    <div class="header-actions">
+                        <button class="btn-action-icon" id="btn-copy-note" title="Copiar" aria-label="Copiar bloc">📋</button>
+                        <button class="btn-action-icon" id="btn-clear-note" title="Limpiar" aria-label="Limpiar bloc" style="color:#ef4444;">✕</button>
+                    </div>
+                </div>
+                <textarea class="quick-note-textarea" id="quick-note-area" placeholder="Teléfonos, datos temporales..."></textarea>
+            </div>
+
+            <div id="sidebar-container" style="display:flex; flex-direction:column; gap:10px;" role="region" aria-label="Widgets"></div>
+        </aside>
+    </main>
+
+    <!-- MODAL DE EDICIÓN -->
+    <div class="edit-modal-overlay" id="editModalOverlay" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+        <div class="edit-modal">
+            <h3 id="edit-modal-title">✏️ Editar Actuación</h3>
+
+            <label for="edit-date">📅 Fecha</label>
+            <input type="date" id="edit-date" required aria-label="Fecha">
+
+            <label id="edit-type-label">Tipo</label>
+            <div class="edit-type-row" id="edit-type-row" role="group" aria-labelledby="edit-type-label">
+                <button type="button" data-type="incidencia" class="active">🔴 Incidencia</button>
+                <button type="button" data-type="peticion">🟠 Petición</button>
+                <button type="button" data-type="explotacion">🟢 Explotación</button>
+            </div>
+
+            <label id="edit-role-label">Participación</label>
+            <div class="edit-role-row" id="edit-role-row" role="group" aria-labelledby="edit-role-label"></div>
+
+            <label for="edit-ticket">🎫 Ticket / ID</label>
+            <input type="text" id="edit-ticket" placeholder="Número de ticket" aria-label="Ticket">
+
+            <label for="edit-desc">📝 Descripción</label>
+            <textarea id="edit-desc" placeholder="Descripción detallada" aria-label="Descripción"></textarea>
+
+            <div class="edit-remote-row">
+                <input type="checkbox" id="edit-remote">
+                <label for="edit-remote">Teletrabajo (TT)</label>
+            </div>
+
+            <div class="edit-modal-actions">
+                <button type="button" class="btn-top" id="btn-modal-cancel">Cancelar</button>
+                <button type="button" class="btn-top btn-backup-style" id="btn-modal-save">💾 Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENÚ DE OPCIONES -->
+    <div id="dangerMenu" class="danger-menu" style="display: none;">
+        <button type="button" class="danger-menu-item" id="btn-clear-quarter-menu">
+            🗑️ Borrar Trimestre Actual
+        </button>
+        <button type="button" class="danger-menu-item" id="btn-reset-all-menu">
+            ⚠️ LIMPIAR TODO
+        </button>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN DESTRUCTIVA -->
+    <div class="edit-modal-overlay" id="dangerModal" role="dialog" aria-modal="true" aria-labelledby="danger-title">
+        <div class="edit-modal" style="max-width: 420px;">
+            <h3 id="danger-title" style="color: #ef4444;">⚠️ Operación Destructiva</h3>
+            <p id="danger-message" style="color: var(--text-muted); margin: 14px 0; line-height: 1.5;"></p>
+            <p style="color: var(--text-dim); font-size: 0.75rem;">Esta acción NO se puede deshacer.</p>
+
+            <div class="edit-modal-actions">
+                <button type="button" class="btn-top" id="btn-danger-cancel">Cancelar</button>
+                <button type="button" class="btn-top btn-danger-style" id="btn-danger-confirm" style="background: #ef4444; color: white; border-color: #ef4444;">🗑️ Eliminar Datos</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÁREA DE IMPRESIÓN -->
+    <div id="print-preview-zone">
+        <div class="print-header">
+            <h2>📊 Informe Trimestral de Actividades</h2>
+            <p>Cumplimiento de objetivos e indicadores de rendimiento</p>
+        </div>
+
+        <table class="print-meta">
+            <tr>
+                <td class="lbl">Empleado / Puesto</td>
+                <td id="prnt-worker">Nombre y apellidos - Puesto</td>
+                <td class="lbl">Periodo</td>
+                <td id="prnt-period" style="font-weight: bold;"></td>
+            </tr>
+            <tr>
+                <td class="lbl">Órgano / Unidad</td>
+                <td colspan="3" id="prnt-unit">Órgano / Unidad</td>
+            </tr>
+        </table>
+
+        <div class="print-section-title">1. Cuadro de indicadores cuantitativos</div>
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="width: 40%;">Indicador métrico mensual</th>
+                    <th colspan="3" id="p-m1">Mes 1</th>
+                    <th colspan="3" id="p-m2">Mes 2</th>
+                    <th colspan="3" id="p-m3">Mes 3</th>
+                    <th colspan="3" style="background:#e2e8f0;">Totales</th>
+                </tr>
+                <tr>
+                    <th>Gen.</th><th>Part.</th><th>Rev.</th>
+                    <th>Gen.</th><th>Part.</th><th>Rev.</th>
+                    <th>Gen.</th><th>Part.</th><th>Rev.</th>
+                    <th style="background:#f1f5f9;">Gen.</th><th style="background:#f1f5f9;">Part.</th><th style="background:#f1f5f9;">Rev.</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="left">Incidencias</td>
+                    <td id="c-m1-inc-g">0</td><td id="c-m1-inc-p">0</td><td id="c-m1-inc-r">0</td>
+                    <td id="c-m2-inc-g">0</td><td id="c-m2-inc-p">0</td><td id="c-m2-inc-r">0</td>
+                    <td id="c-m3-inc-g">0</td><td id="c-m3-inc-p">0</td><td id="c-m3-inc-r">0</td>
+                    <td id="c-tot-inc-g" style="font-weight:bold;">0</td><td id="c-tot-inc-p" style="font-weight:bold;">0</td><td id="c-tot-inc-r" style="font-weight:bold;">0</td>
+                </tr>
+                <tr>
+                    <td class="left">Peticiones</td>
+                    <td id="c-m1-pet-g">0</td><td id="c-m1-pet-p">0</td><td id="c-m1-pet-r">0</td>
+                    <td id="c-m2-pet-g">0</td><td id="c-m2-pet-p">0</td><td id="c-m2-pet-r">0</td>
+                    <td id="c-m3-pet-g">0</td><td id="c-m3-pet-p">0</td><td id="c-m3-pet-r">0</td>
+                    <td id="c-tot-pet-g" style="font-weight:bold;">0</td><td id="c-tot-pet-p" style="font-weight:bold;">0</td><td id="c-tot-pet-r" style="font-weight:bold;">0</td>
+                </tr>
+                <tr>
+                    <td class="left">Tareas</td>
+                    <td id="c-m1-tar" colspan="3">0</td>
+                    <td id="c-m2-tar" colspan="3">0</td>
+                    <td id="c-m3-tar" colspan="3">0</td>
+                    <td id="c-tot-tar" colspan="3" style="font-weight:bold;">0</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="print-section-title" id="print-detail-title">2. Desglose justificativo detallado</div>
+        <div id="print-table-zone"></div>
+
+        <div style="margin-top: 50px; display: block; text-align: right; font-size: 0.9rem;">
+            <p id="print-signature-date"></p>
+            <div style="margin-top: 60px; display: inline-block; width: 240px; border-top: 2px solid #000; text-align: center; padding-top: 8px; font-weight: bold;">
+                Firma del Responsable
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

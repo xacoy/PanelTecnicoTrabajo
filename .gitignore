@@ -1,0 +1,5 @@
+# Datos personales o laborales: nunca subir
+backup_*.json
+copia_seguridad_*.json
+data/links.json
+*.local.json

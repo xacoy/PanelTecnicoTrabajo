@@ -1,0 +1,61 @@
+[
+  {
+    "title": "Categoría 1",
+    "id": "c-ticketing",
+    "min": false,
+    "links": [
+      {
+        "n": "Ejemplo A",
+        "u": "https://example.com/"
+      },
+      {
+        "n": "Ejemplo B",
+        "u": "https://example.com/b"
+      }
+    ]
+  },
+  {
+    "title": "Categoría 2",
+    "id": "c-activos",
+    "min": false,
+    "links": [
+      {
+        "n": "Ejemplo C",
+        "u": "https://example.com/c"
+      }
+    ]
+  },
+  {
+    "title": "Categoría 3",
+    "id": "c-doc",
+    "min": false,
+    "links": [
+      {
+        "n": "Ejemplo D",
+        "u": "https://example.com/d"
+      }
+    ]
+  },
+  {
+    "title": "Categoría 4",
+    "id": "c-tools",
+    "min": false,
+    "links": [
+      {
+        "n": "Ejemplo E",
+        "u": "https://example.com/e"
+      }
+    ]
+  },
+  {
+    "title": "Categoría 5",
+    "id": "c-personal",
+    "min": false,
+    "links": [
+      {
+        "n": "Ejemplo F",
+        "u": "https://example.com/f"
+      }
+    ]
+  }
+]
