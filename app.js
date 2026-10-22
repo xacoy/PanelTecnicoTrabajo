@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.1.2';
+const APP_VERSION = '2.1.3';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -536,14 +536,24 @@ const WidgetsManager = {
                 });
                 text.addEventListener('click', () => this.toggleTask(idx, ti));
 
+                const btnEditTask = DomUtils.createEl('span', {
+                    text: '✎',
+                    attrs: { title: 'Editar tarea', role: 'button', tabindex: '0', style: 'cursor:pointer; font-size:12px; color:var(--text-dim)' }
+                });
+                btnEditTask.addEventListener('click', () => this.startEditTask(item, text, idx, ti));
+                btnEditTask.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') this.startEditTask(item, text, idx, ti);
+                });
+
                 const btnDel = DomUtils.createEl('span', {
                     text: '✕',
-                    attrs: { style: 'cursor:pointer; font-size:11px; color:#ef4444' }
+                    attrs: { title: 'Borrar tarea', style: 'cursor:pointer; font-size:11px; color:#ef4444' }
                 });
                 btnDel.addEventListener('click', () => this.deleteTask(idx, ti));
 
                 item.appendChild(checkbox);
                 item.appendChild(text);
+                item.appendChild(btnEditTask);
                 item.appendChild(btnDel);
                 list.appendChild(item);
             });
@@ -577,6 +587,33 @@ const WidgetsManager = {
     toggleTask(idx, ti) {
         State.widgets[idx].tasks[ti].d = !State.widgets[idx].tasks[ti].d;
         this.render();
+    },
+
+    // Edita el texto de una tarea en el sitio: Enter guarda, Esc cancela
+    startEditTask(item, textEl, idx, ti) {
+        const task = State.widgets[idx].tasks[ti];
+        const input = DomUtils.createEl('input', {
+            class: 'todo-in todo-edit',
+            attrs: { type: 'text', 'aria-label': 'Editar tarea' }
+        });
+        input.value = task.t;
+        item.replaceChild(input, textEl);
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+
+        let finished = false;
+        const finish = (save) => {
+            if (finished) return;
+            finished = true;
+            const value = input.value.trim();
+            if (save && value) task.t = value;
+            this.render();
+        };
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') finish(true);
+            else if (e.key === 'Escape') finish(false);
+        });
+        input.addEventListener('blur', () => finish(true));
     },
 
     deleteTask(idx, ti) {

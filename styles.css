@@ -1587,6 +1587,11 @@ table.records-table tbody tr.record-row:hover td {
     cursor: pointer;
 }
 
+.todo-edit {
+    flex: 1;
+    min-width: 0;
+}
+
 .todo-text.done {
     text-decoration: line-through;
     text-decoration-thickness: 1.5px;
