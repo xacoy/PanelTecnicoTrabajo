@@ -11,6 +11,7 @@ Abre `index.html` en el navegador. Todos los datos se guardan en el `localStorag
 El repositorio solo contiene datos de ejemplo.
 
 - **Copia de seguridad:** `💾 Backup` descarga un `.json` con enlaces, notas y actuaciones. `📂 Cargar` lo restaura. Esos archivos están en `.gitignore`: no los subas.
+- **Color de cada enlace:** al editar o crear un enlace puedes elegir su color de resaltado (o dejar el de la categoría).
 - **Enlaces por defecto:** si sirves la carpeta por HTTP (por ejemplo `python -m http.server`), el panel lee `data/links.json` (ignorado por git) y, si no existe, `data/links.example.json`. Con `file://` el navegador bloquea esa lectura; usa entonces `Cargar`.
 - **Datos del informe impreso:** `⚙️ Herramientas > 👤 Datos del informe` (nombre, unidad y localidad).
 

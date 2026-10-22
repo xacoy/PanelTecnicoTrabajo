@@ -1074,6 +1074,76 @@ input:focus, textarea:focus, button:focus {
     background: var(--primary);
 }
 
+/* Color de resaltado propio de un enlace */
+#links-container .category .link-card.has-color {
+    border-left-color: var(--link-color);
+}
+
+#links-container .category .link-card.has-color .dot {
+    background: var(--link-color);
+}
+
+#links-container .category .link-card.has-color:hover {
+    background: color-mix(in srgb, var(--link-color) 18%, transparent);
+    border-color: var(--link-color);
+    color: var(--text-main);
+}
+
+.link-color-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.link-color-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.link-color-dot {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    box-shadow: 0 0 0 1px var(--border-subtle);
+    cursor: pointer;
+}
+
+.link-color-dot:hover {
+    transform: scale(1.12);
+}
+
+.link-color-dot.active {
+    border-color: var(--bg-panel);
+    box-shadow: 0 0 0 2px var(--text-main);
+}
+
+#link-color-input {
+    width: 34px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+}
+
+#link-color-reset.active {
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.25);
+    color: var(--text-main);
+}
+
+.link-modal-error {
+    min-height: 1.2em;
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--on-danger);
+}
+
 /* ============================================
    COLUMNA 2: GESTOR
 ============================================ */

@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.2.1';
+const APP_VERSION = '2.3.0';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -349,6 +349,11 @@ const LinksManager = {
         const dot = DomUtils.createEl('span', { class: 'dot' });
         const text = document.createTextNode(link.n);
 
+        if (LinksManager.isValidColor(link.c)) {
+            linkEl.classList.add('has-color');
+            linkEl.style.setProperty('--link-color', link.c);
+        }
+
         linkEl.appendChild(dot);
         linkEl.appendChild(text);
 
@@ -380,29 +385,100 @@ const LinksManager = {
     },
 
     addLink(catIdx) {
-        const name = prompt("Nombre del enlace:");
-        if (!name || !name.trim()) return;
-        const url = prompt("URL del enlace:");
-        if (!url || !url.trim()) return;
-        if (!Validators.isValidUrl(url)) {
-            alert("URL no válida. Asegúrate de incluir http:// o https://");
-            return;
-        }
-        State.linkData[catIdx].links.push({ n: name.trim(), u: url.trim() });
-        this.render();
+        this.openModal(catIdx, null);
     },
 
     editLink(catIdx, linkIdx) {
-        const currentLink = State.linkData[catIdx].links[linkIdx];
-        const name = prompt("Nombre:", currentLink.n);
-        if (!name || !name.trim()) return;
-        const url = prompt("URL:", currentLink.u);
-        if (!url || !url.trim()) return;
-        if (!Validators.isValidUrl(url)) {
-            alert("URL no válida");
+        this.openModal(catIdx, linkIdx);
+    },
+
+    isValidColor(value) {
+        return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
+    },
+
+    PRESET_COLORS: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6', '#8b5cf6', '#ec4899', '#94a3b8'],
+    modal: { catIdx: null, linkIdx: null, color: null },
+
+    initModal() {
+        const presets = DomUtils.getById('link-color-presets');
+        this.PRESET_COLORS.forEach(color => {
+            const btn = DomUtils.createEl('button', {
+                class: 'link-color-dot',
+                attrs: { type: 'button', role: 'radio', 'aria-checked': 'false', 'aria-label': 'Color ' + color, title: color, 'data-color': color }
+            });
+            btn.style.background = color;
+            btn.addEventListener('click', () => this.setModalColor(color));
+            presets.appendChild(btn);
+        });
+
+        DomUtils.getById('link-color-input').addEventListener('input', (e) => this.setModalColor(e.target.value));
+        DomUtils.getById('link-color-reset').addEventListener('click', () => this.setModalColor(null));
+        DomUtils.getById('btn-link-cancel').addEventListener('click', () => this.closeModal());
+        DomUtils.getById('btn-link-save').addEventListener('click', () => this.saveModal());
+        DomUtils.getById('linkModalOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'linkModalOverlay') this.closeModal();
+        });
+        ['link-name', 'link-url'].forEach(id => {
+            DomUtils.getById(id).addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') this.saveModal();
+            });
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && DomUtils.getById('linkModalOverlay').classList.contains('open')) this.closeModal();
+        });
+    },
+
+    setModalColor(color) {
+        this.modal.color = this.isValidColor(color) ? color.toLowerCase() : null;
+        DomUtils.queryAll('#link-color-presets .link-color-dot').forEach(btn => {
+            const on = btn.dataset.color === this.modal.color;
+            btn.classList.toggle('active', on);
+            btn.setAttribute('aria-checked', String(on));
+        });
+        if (this.modal.color) DomUtils.getById('link-color-input').value = this.modal.color;
+        DomUtils.getById('link-color-reset').classList.toggle('active', !this.modal.color);
+    },
+
+    openModal(catIdx, linkIdx) {
+        const link = linkIdx === null ? null : State.linkData[catIdx].links[linkIdx];
+        this.modal.catIdx = catIdx;
+        this.modal.linkIdx = linkIdx;
+        DomUtils.setText(DomUtils.getById('link-modal-title'), link ? '✎ Editar enlace' : '➕ Nuevo enlace');
+        DomUtils.getById('link-name').value = link ? link.n : '';
+        DomUtils.getById('link-url').value = link ? link.u : '';
+        DomUtils.getById('link-color-input').value = '#3b82f6';
+        this.setModalColor(link ? link.c : null);
+        DomUtils.setText(DomUtils.getById('link-modal-error'), '');
+        DomUtils.getById('linkModalOverlay').classList.add('open');
+        DomUtils.getById('link-name').focus();
+    },
+
+    closeModal() {
+        DomUtils.getById('linkModalOverlay').classList.remove('open');
+    },
+
+    saveModal() {
+        const name = DomUtils.getById('link-name').value.trim();
+        const url = DomUtils.getById('link-url').value.trim();
+        const error = DomUtils.getById('link-modal-error');
+
+        if (!name) {
+            DomUtils.setText(error, 'Escribe un nombre para el enlace.');
             return;
         }
-        State.linkData[catIdx].links[linkIdx] = { n: name.trim(), u: url.trim() };
+        if (!Validators.isValidUrl(url)) {
+            DomUtils.setText(error, 'URL no válida. Incluye http:// o https://');
+            return;
+        }
+
+        const link = { n: name, u: url };
+        if (this.modal.color) link.c = this.modal.color;
+
+        const links = State.linkData[this.modal.catIdx].links;
+        if (this.modal.linkIdx === null) links.push(link);
+        else links[this.modal.linkIdx] = link;
+
+        this.closeModal();
         this.render();
     },
 
@@ -1857,6 +1933,7 @@ const run = (fn) => {
 document.addEventListener('DOMContentLoaded', async () => {
     // El menú "⋯" se activa primero, antes de cargar datos
     run(() => MoreMenu.init());
+    run(() => LinksManager.initModal());
 
     // Cargar estado global
     State.database = Storage.loadDatabase();
