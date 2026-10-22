@@ -1883,6 +1883,23 @@ table.records-table tbody tr.record-row:hover td {
     transition: var(--transition);
 }
 
+.todo-box .todo-in {
+    padding: 8px 10px;
+    border-radius: 7px;
+    font-size: 0.75rem;
+}
+
+.todo-box .todo-list {
+    padding: 6px 8px;
+    background: rgba(var(--s4-rgb), 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 7px;
+}
+
+.todo-box .todo-item:last-child {
+    border-bottom: none;
+}
+
 .todo-in:focus {
     border-color: var(--primary);
     background: rgba(var(--s4-rgb), 0.8);

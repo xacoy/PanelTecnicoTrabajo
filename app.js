@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.3.2';
+const APP_VERSION = '2.4.0';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -499,9 +499,14 @@ const WidgetsManager = {
         const container = DomUtils.getById('sidebar-container');
         container.innerHTML = '';
 
-        State.widgets.forEach((widget, idx) => {
-            const widgetDiv = this.createWidgetElement(widget, idx);
-            container.appendChild(widgetDiv);
+        // Las listas van primero (debajo del bloc rápido) y después las notas
+        const order = State.widgets.map((widget, idx) => idx)
+            .sort((a, b) => (State.widgets[a].type === 'todo' ? 0 : 1) - (State.widgets[b].type === 'todo' ? 0 : 1));
+        order.forEach(idx => {
+            const widget = State.widgets[idx];
+            container.appendChild(widget.type === 'todo'
+                ? this.createTodoBox(widget, idx)
+                : this.createWidgetElement(widget, idx));
         });
 
         FieldSizes.fitAll();
@@ -581,67 +586,96 @@ const WidgetsManager = {
                 if (textarea.dataset.auto === '1') FieldSizes.fit(textarea);
             });
             content.appendChild(textarea);
-        } else if (widget.type === 'todo') {
-            const inputDiv = DomUtils.createEl('div', { attrs: { style: 'padding:8px' } });
-            const input = DomUtils.createEl('input', {
-                class: 'todo-in',
-                attrs: {
-                    type: 'text',
-                    placeholder: '+ Tarea (Enter)...'
-                }
-            });
-            input.addEventListener('keypress', (e) => this.addTask(e, idx));
-            inputDiv.appendChild(input);
-
-            const list = DomUtils.createEl('ul', { class: 'todo-list' });
-            if (widget.h) list.style.height = widget.h + 'px';
-            FieldSizes.observe(list, (h) => {
-                widget.h = h;
-                Storage.saveWidgets(State.widgets);
-            });
-            widget.tasks.forEach((task, ti) => {
-                const item = DomUtils.createEl('li', { class: 'todo-item' });
-                const checkbox = DomUtils.createEl('input', {
-                    attrs: { type: 'checkbox', 'aria-label': 'Marcar como hecha' }
-                });
-                checkbox.checked = !!task.d;
-                checkbox.addEventListener('change', () => this.toggleTask(idx, ti));
-
-                const text = DomUtils.createEl('span', {
-                    class: `todo-text ${task.d ? 'done' : ''}`,
-                    text: task.t
-                });
-                text.addEventListener('click', () => this.toggleTask(idx, ti));
-
-                const btnEditTask = DomUtils.createEl('span', {
-                    text: '✎',
-                    attrs: { title: 'Editar tarea', role: 'button', tabindex: '0', style: 'cursor:pointer; font-size:12px; color:var(--text-dim)' }
-                });
-                btnEditTask.addEventListener('click', () => this.startEditTask(item, text, idx, ti));
-                btnEditTask.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') this.startEditTask(item, text, idx, ti);
-                });
-
-                const btnDel = DomUtils.createEl('span', {
-                    text: '✕',
-                    attrs: { title: 'Borrar tarea', style: 'cursor:pointer; font-size:11px; color:#ef4444' }
-                });
-                btnDel.addEventListener('click', () => this.deleteTask(idx, ti));
-
-                item.appendChild(checkbox);
-                item.appendChild(text);
-                item.appendChild(btnEditTask);
-                item.appendChild(btnDel);
-                list.appendChild(item);
-            });
-
-            content.appendChild(inputDiv);
-            content.appendChild(list);
         }
 
         div.appendChild(header);
         div.appendChild(content);
         return div;
+    },
+
+    // Campo de entrada y lista de tareas de una lista to-do
+    buildTodoBody(widget, idx) {
+        const input = DomUtils.createEl('input', {
+            class: 'todo-in',
+            attrs: {
+                type: 'text',
+                placeholder: '+ Tarea (Enter)...'
+            }
+        });
+        input.addEventListener('keypress', (e) => this.addTask(e, idx));
+
+        const list = DomUtils.createEl('ul', { class: 'todo-list' });
+        if (widget.h) list.style.height = widget.h + 'px';
+        FieldSizes.observe(list, (h) => {
+            widget.h = h;
+            Storage.saveWidgets(State.widgets);
+        });
+        widget.tasks.forEach((task, ti) => {
+            const item = DomUtils.createEl('li', { class: 'todo-item' });
+            const checkbox = DomUtils.createEl('input', {
+                attrs: { type: 'checkbox', 'aria-label': 'Marcar como hecha' }
+            });
+            checkbox.checked = !!task.d;
+            checkbox.addEventListener('change', () => this.toggleTask(idx, ti));
+
+            const text = DomUtils.createEl('span', {
+                class: `todo-text ${task.d ? 'done' : ''}`,
+                text: task.t
+            });
+            text.addEventListener('click', () => this.toggleTask(idx, ti));
+
+            const btnEditTask = DomUtils.createEl('span', {
+                text: '✎',
+                attrs: { title: 'Editar tarea', role: 'button', tabindex: '0', style: 'cursor:pointer; font-size:12px; color:var(--text-dim)' }
+            });
+            btnEditTask.addEventListener('click', () => this.startEditTask(item, text, idx, ti));
+            btnEditTask.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') this.startEditTask(item, text, idx, ti);
+            });
+
+            const btnDel = DomUtils.createEl('span', {
+                text: '✕',
+                attrs: { title: 'Borrar tarea', style: 'cursor:pointer; font-size:11px; color:#ef4444' }
+            });
+            btnDel.addEventListener('click', () => this.deleteTask(idx, ti));
+
+            item.appendChild(checkbox);
+            item.appendChild(text);
+            item.appendChild(btnEditTask);
+            item.appendChild(btnDel);
+            list.appendChild(item);
+        });
+
+        return [input, list];
+    },
+
+    // Las listas usan el mismo estilo que el bloc rápido y están siempre abiertas
+    createTodoBox(widget, idx) {
+        const box = DomUtils.createEl('div', { class: 'quick-note-box todo-box' });
+
+        const header = DomUtils.createEl('div', { class: 'quick-note-header' });
+        header.appendChild(DomUtils.createEl('span', { class: 'quick-note-title', text: '✅ ' + widget.title }));
+
+        const actions = DomUtils.createEl('div', { class: 'header-actions' });
+        const btnEdit = DomUtils.createEl('button', {
+            class: 'btn-action-icon',
+            text: '✎',
+            attrs: { title: 'Renombrar', type: 'button' }
+        });
+        btnEdit.addEventListener('click', () => this.editTitle(idx));
+        const btnDel = DomUtils.createEl('button', {
+            class: 'btn-action-icon',
+            text: '✕',
+            attrs: { title: 'Eliminar', type: 'button', style: 'color:#ef4444' }
+        });
+        btnDel.addEventListener('click', () => this.delete(idx));
+        actions.appendChild(btnEdit);
+        actions.appendChild(btnDel);
+        header.appendChild(actions);
+
+        box.appendChild(header);
+        this.buildTodoBody(widget, idx).forEach(el => box.appendChild(el));
+        return box;
     },
 
     toggleMinimize(idx) {
