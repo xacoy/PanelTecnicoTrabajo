@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.3.1';
+const APP_VERSION = '2.3.2';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -120,7 +120,7 @@ const State = {
             type: 'todo',
             title: 'TAREAS PENDIENTES',
             tasks: [],
-            min: true
+            min: false
         }
     ]
 };
@@ -237,6 +237,7 @@ const Storage = {
             const w = JSON.parse(localStorage.getItem('gob_widgets_vFinal')) || State.DEFAULT_WIDGETS;
             w.forEach(widget => {
                 if (typeof widget.min !== 'boolean') widget.min = true;
+                if (widget.type === 'todo') widget.min = false; // las listas se abren siempre al cargar
             });
             return w;
         } catch {
@@ -1392,6 +1393,9 @@ const Backup = {
                 if (data.links && data.widgets) {
                     State.linkData = data.links;
                     State.widgets = data.widgets;
+                    State.widgets.forEach(widget => {
+                        if (widget.type === 'todo') widget.min = false;
+                    });
                     Storage.saveLinks(State.linkData);
                     Storage.saveWidgets(State.widgets);
                     imported = true;
