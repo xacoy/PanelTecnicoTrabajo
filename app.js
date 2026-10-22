@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.2.1';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -1701,6 +1701,7 @@ const Theme = {
         { dark: ['gruvbox', 'Gruvbox', '#282828', '#fabd2f'], light: ['gruvbox-light', 'Gruvbox', '#fbf1c7', '#9a6210'] },
         { dark: ['coffee', 'Café', '#1d1611', '#d4a373'], light: ['coffee-light', 'Café', '#fffaf4', '#8a5a2b'] },
         { dark: ['sand-dark', 'Arena', '#1e1810', '#f59e0b'], light: ['sand', 'Arena', '#fffdf8', '#b45309'] },
+        { dark: ['slate', 'Pizarra', '#171b21', '#94a3b8'], light: ['slate-light', 'Pizarra', '#ffffff', '#475569'] },
         { dark: ['graphite', 'Grafito', '#141416', '#e4e4e7'], light: null }
     ],
 

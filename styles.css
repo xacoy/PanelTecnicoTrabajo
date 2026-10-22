@@ -618,6 +618,30 @@ input:focus, textarea:focus, button:focus {
     --s1-rgb: 94, 76, 46; --s2-rgb: 61, 49, 30; --s3-rgb: 42, 34, 21; --s4-rgb: 13, 10, 6;
 }
 
+:root[data-theme="slate"] {
+    --primary: #94a3b8; --primary-light: #b6c2d2; --primary-dark: #64748b; --primary-rgb: 148, 163, 184; --on-primary: #10141a;
+    --secondary: #a8b5a2; --secondary-rgb: 168, 181, 162;
+    --bg-main: #0f1216; --bg-main-2: #13161c; --bg-panel: #171b21; --bg-card: #212730; --bg-card-hover: #29303a;
+    --border-color: #353d49; --border-subtle: #566070;
+    --text-main: #e6e9ee; --text-muted: #bdc0c5; --text-dim: #8f9298; --text-label: #d1d4da;
+    --s1-rgb: 53, 61, 73; --s2-rgb: 36, 42, 50; --s3-rgb: 26, 31, 37; --s4-rgb: 10, 12, 14;
+}
+:root[data-theme="slate-light"] {
+    color-scheme: light;
+    --primary: #475569; --primary-light: #64748b; --primary-dark: #334155; --primary-rgb: 71, 85, 105; --on-primary: #ffffff;
+    --secondary: #6b7f73; --secondary-rgb: 107, 127, 115;
+    --bg-main: #eceff2; --bg-main-2: #dde2e8; --bg-panel: #ffffff; --bg-card: #f4f6f8; --bg-card-hover: #dde2e8;
+    --border-color: #d3d9e0; --border-subtle: #a3adba;
+    --text-main: #151a21; --text-muted: #3b4654; --text-dim: #697484; --text-label: #151a21;
+    --s1-rgb: 163, 173, 186; --s2-rgb: 211, 217, 224; --s3-rgb: 244, 246, 248; --s4-rgb: 255, 255, 255;
+    --on-success: #047857; --on-danger: #b91c1c;
+    --date-filter: none;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.12);
+    --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.15);
+    --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.18);
+    --shadow-xl: 0 20px 40px rgba(15, 23, 42, 0.2);
+}
+
 /* ============================================
    SELECTOR DE APARTADOS Y TEMAS
 ============================================ */
