@@ -2193,155 +2193,279 @@ input[type="checkbox"] {
 }
 
 /* ============================================
-   IMPRESIÓN
+   IMPRESIÓN (informes)
 ============================================ */
 
 #print-preview-zone {
     display: none;
-    background: white;
-    color: black;
-    padding: 40px;
-    border-radius: 8px;
-    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
 }
 
-.print-header {
-    text-align: center;
-    margin-bottom: 30px;
-    border-bottom: 3px solid #1e40af;
-    padding-bottom: 15px;
-}
+@page {
+    size: A4;
+    margin: 16mm 14mm 18mm;
 
-.print-header h2 {
-    font-size: 1.5rem;
-    text-transform: uppercase;
-    color: #1e40af;
-    margin-bottom: 5px;
-}
-
-.print-header p {
-    color: #64748b;
-    font-size: 0.9rem;
-}
-
-.print-meta {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-    font-size: 0.9rem;
-}
-
-.print-meta td {
-    border: 1px solid #cbd5e1;
-    padding: 8px 12px;
-    color: black;
-}
-
-.print-meta td.lbl {
-    font-weight: bold;
-    background: #f1f5f9;
-    width: 20%;
-}
-
-.print-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 25px;
-    font-size: 0.85rem;
-}
-
-.print-table th, .print-table td {
-    border: 1px solid #cbd5e1;
-    padding: 10px;
-}
-
-.print-table th {
-    background: #1e40af;
-    color: white;
-    font-weight: bold;
-}
-
-.print-table td.left {
-    text-align: left;
-}
-
-.print-section-title {
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-left: 5px solid #3b82f6;
-    padding-left: 10px;
-    margin: 25px 0 15px;
-    color: #1e40af;
-    text-transform: uppercase;
+    @bottom-right {
+        content: "Página " counter(page) " de " counter(pages);
+        font: 8pt "Segoe UI", Arial, sans-serif;
+        color: #555;
+    }
 }
 
 @media print {
-    .no-print, .global-top-bar, .workspace-split {
+    .no-print, .global-top-bar, .workspace-split, .tb-views, .more-menu,
+    .edit-modal-overlay {
         display: none !important;
+    }
+
+    html {
+        font-size: 14px;
+    }
+
+    body {
+        display: block;
+        background: #fff;
+        color: #111;
+        height: auto;
+        overflow: visible;
+        padding: 0;
     }
 
     #print-preview-zone {
         display: block !important;
         padding: 0;
+        color: #111;
+        font: 9.5pt/1.45 "Segoe UI", Arial, Helvetica, sans-serif;
     }
 
-    body {
-        background: white;
-        color: black;
-        height: auto;
-        overflow: visible;
-    }
-}
-
-/* ============================================
-   AJUSTES DE ANCHO (panel Gestor estrecho)
-============================================ */
-
-.gestor-col {
-    container-type: inline-size;
-    container-name: gestor;
-}
-
-.form-row > *,
-.form-col,
-.selector-clicks > *,
-.date-form-col input[type="date"] {
-    min-width: 0;
-}
-
-@container gestor (max-width: 520px) {
-    .form-card {
-        padding: 12px;
+    #print-preview-zone * {
+        border-radius: 0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
-    .date-quarter-row,
-    .task-role-row {
-        grid-template-columns: 1fr;
+    .rp-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 16pt;
+        padding-bottom: 9pt;
+        border-bottom: 2.5pt solid #1f3a5f;
+        margin-bottom: 12pt;
     }
 
-    .clickable-option {
-        padding: 7px 6px;
-        font-size: 0.75rem;
+    .rp-head h1 {
+        font-size: 18pt;
+        line-height: 1.15;
+        color: #1f3a5f;
+        font-weight: 700;
+        letter-spacing: -0.2pt;
     }
 
-    table.records-table {
-        font-size: 0.75rem;
+    .rp-sub {
+        margin-top: 3pt;
+        color: #555;
+        font-size: 9.5pt;
     }
 
-    table.records-table th {
-        padding: 8px 5px;
-        font-size: 0.72rem;
-        letter-spacing: 0;
+    .rp-period {
+        text-align: right;
     }
 
-    table.records-table td {
-        padding: 6px 5px;
-        overflow-wrap: anywhere;
+    .rp-period span,
+    .rp-meta span {
+        display: block;
+        font-size: 7.5pt;
+        letter-spacing: 0.8pt;
+        text-transform: uppercase;
+        color: #666;
     }
 
-    .action-cell {
-        flex-wrap: wrap;
-        gap: 3px;
+    .rp-period strong {
+        font-size: 10.5pt;
+        color: #111;
+    }
+
+    .rp-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 0.75pt solid #b8c2d0;
+        margin-bottom: 10pt;
+    }
+
+    .rp-meta div {
+        padding: 6pt 9pt;
+    }
+
+    .rp-meta div + div {
+        border-left: 0.75pt solid #b8c2d0;
+    }
+
+    .rp-meta strong {
+        font-size: 10.5pt;
+        font-weight: 600;
+    }
+
+    .rp-kpis {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        border: 0.75pt solid #b8c2d0;
+        background: #f3f6fa;
+        margin-bottom: 14pt;
+        break-inside: avoid;
+    }
+
+    .rp-kpis div {
+        padding: 7pt 9pt;
+        text-align: center;
+    }
+
+    .rp-kpis div + div {
+        border-left: 0.75pt solid #b8c2d0;
+    }
+
+    .rp-kpis b {
+        display: block;
+        font-size: 16pt;
+        line-height: 1.1;
+        color: #1f3a5f;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .rp-kpis span {
+        display: block;
+        margin-top: 2pt;
+        font-size: 7pt;
+        letter-spacing: 0.3pt;
+        text-transform: uppercase;
+        color: #555;
+    }
+
+    .rp-title {
+        margin: 14pt 0 6pt;
+        padding-bottom: 3pt;
+        border-bottom: 0.75pt solid #1f3a5f;
+        font-size: 11pt;
+        font-weight: 700;
+        color: #1f3a5f;
+        break-after: avoid;
+    }
+
+    .rp-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 9pt;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .rp-table th,
+    .rp-table td {
+        border: 0.6pt solid #b8c2d0;
+        padding: 4pt 5pt;
+        text-align: center;
+    }
+
+    .rp-table th {
+        background: #e8edf4;
+        color: #1f3a5f;
+        font-weight: 700;
+        font-size: 8.5pt;
+    }
+
+    .rp-table .rp-first {
+        text-align: left;
+        width: 30%;
+    }
+
+    .rp-table th.rp-total-col {
+        background: #d5deeb;
+    }
+
+    .rp-table td.rp-total-col {
+        background: #f3f6fa;
+        font-weight: 700;
+    }
+
+    .rp-note {
+        margin-top: 5pt;
+        font-size: 7.5pt;
+        color: #555;
+    }
+
+    .rp-detail thead {
+        display: table-header-group;
+    }
+
+    .rp-detail tr {
+        break-inside: avoid;
+    }
+
+    .rp-detail tbody tr:nth-child(even) td {
+        background: #f7f9fc;
+    }
+
+    .rp-detail th {
+        text-align: left;
+    }
+
+    .rp-detail td {
+        text-align: left;
+        font-size: 8.5pt;
+        padding: 3.5pt 5pt;
+    }
+
+    .rp-detail .c-date {
+        width: 12%;
+        white-space: nowrap;
+    }
+
+    .rp-detail .c-type {
+        width: 13%;
+    }
+
+    .rp-detail .c-role {
+        width: 11%;
+    }
+
+    .rp-detail .c-id {
+        width: 15%;
+        white-space: nowrap;
+        font-weight: 600;
+    }
+
+    .rp-empty {
+        color: #555;
+        font-style: italic;
+        font-size: 9pt;
+    }
+
+    .rp-sign {
+        margin-top: 26pt;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24pt;
+        break-inside: avoid;
+    }
+
+    .rp-sign p {
+        font-size: 9pt;
+    }
+
+    .rp-sign-box {
+        width: 210pt;
+        height: 56pt;
+        border-bottom: 1pt solid #111;
+        position: relative;
+    }
+
+    .rp-sign-box span {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -14pt;
+        text-align: center;
+        font-size: 8.5pt;
+        font-weight: 600;
     }
 }
 

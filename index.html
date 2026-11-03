@@ -13,14 +13,14 @@
             if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
         } catch (e) {}
     </script>
-    <link rel="stylesheet" href="styles.css?v=2.7.0">
+    <link rel="stylesheet" href="styles.css?v=2.8.0">
 </head>
 <body>
     <!-- BARRA SUPERIOR -->
     <header class="global-top-bar" role="banner">
         <div class="global-title">
             <i class="ico" data-icon="cog"></i> Panel Técnico
-            <span class="badge-gov" id="app-version" title="Versión">v2.7.0</span>
+            <span class="badge-gov" id="app-version" title="Versión">v2.8.0</span>
         </div>
 
         <div class="top-bar-actions" role="toolbar" aria-label="Acciones globales">
@@ -285,77 +285,79 @@
 
     <!-- ÁREA DE IMPRESIÓN -->
     <div id="print-preview-zone">
-        <div class="print-header">
-            <h2>📊 Informe Trimestral de Actividades</h2>
-            <p>Cumplimiento de objetivos e indicadores de rendimiento</p>
-        </div>
+        <header class="rp-head">
+            <div>
+                <h1>Informe trimestral de actividades</h1>
+                <p class="rp-sub">Cumplimiento de objetivos e indicadores de rendimiento</p>
+            </div>
+            <div class="rp-period"><span>Periodo</span><strong id="prnt-period"></strong></div>
+        </header>
 
-        <table class="print-meta">
-            <tr>
-                <td class="lbl">Empleado / Puesto</td>
-                <td id="prnt-worker">Nombre y apellidos - Puesto</td>
-                <td class="lbl">Periodo</td>
-                <td id="prnt-period" style="font-weight: bold;"></td>
-            </tr>
-            <tr>
-                <td class="lbl">Órgano / Unidad</td>
-                <td colspan="3" id="prnt-unit">Órgano / Unidad</td>
-            </tr>
-        </table>
+        <section class="rp-meta">
+            <div><span>Empleado / Puesto</span><strong id="prnt-worker">Nombre y apellidos - Puesto</strong></div>
+            <div><span>Órgano / Unidad</span><strong id="prnt-unit">Órgano / Unidad</strong></div>
+        </section>
 
-        <div class="print-section-title">1. Cuadro de indicadores cuantitativos</div>
-        <table class="print-table">
+        <section class="rp-kpis" aria-label="Resumen del periodo">
+            <div><b id="rp-total">0</b><span>Actuaciones</span></div>
+            <div><b id="rp-inc">0</b><span>Incidencias</span></div>
+            <div><b id="rp-pet">0</b><span>Peticiones</span></div>
+            <div><b id="rp-tar">0</b><span>Tareas</span></div>
+            <div><b id="rp-tt">0</b><span>Teletrabajo (días / con actividad)</span></div>
+        </section>
+
+        <h2 class="rp-title">1. Cuadro de indicadores cuantitativos</h2>
+        <table class="rp-table rp-indicators">
             <thead>
                 <tr>
-                    <th rowspan="2" style="width: 40%;">Indicador métrico mensual</th>
+                    <th rowspan="2" class="rp-first">Indicador métrico mensual</th>
                     <th colspan="3" id="p-m1">Mes 1</th>
                     <th colspan="3" id="p-m2">Mes 2</th>
                     <th colspan="3" id="p-m3">Mes 3</th>
-                    <th colspan="3" style="background:#e2e8f0;">Totales</th>
+                    <th colspan="3" class="rp-total-col">Totales</th>
                 </tr>
                 <tr>
                     <th>Gen.</th><th>Part.</th><th>Rev.</th>
                     <th>Gen.</th><th>Part.</th><th>Rev.</th>
                     <th>Gen.</th><th>Part.</th><th>Rev.</th>
-                    <th style="background:#f1f5f9;">Gen.</th><th style="background:#f1f5f9;">Part.</th><th style="background:#f1f5f9;">Rev.</th>
+                    <th class="rp-total-col">Gen.</th><th class="rp-total-col">Part.</th><th class="rp-total-col">Rev.</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="left">Incidencias</td>
+                    <td class="rp-first">Incidencias</td>
                     <td id="c-m1-inc-g">0</td><td id="c-m1-inc-p">0</td><td id="c-m1-inc-r">0</td>
                     <td id="c-m2-inc-g">0</td><td id="c-m2-inc-p">0</td><td id="c-m2-inc-r">0</td>
                     <td id="c-m3-inc-g">0</td><td id="c-m3-inc-p">0</td><td id="c-m3-inc-r">0</td>
-                    <td id="c-tot-inc-g" style="font-weight:bold;">0</td><td id="c-tot-inc-p" style="font-weight:bold;">0</td><td id="c-tot-inc-r" style="font-weight:bold;">0</td>
+                    <td id="c-tot-inc-g" class="rp-total-col">0</td><td id="c-tot-inc-p" class="rp-total-col">0</td><td id="c-tot-inc-r" class="rp-total-col">0</td>
                 </tr>
                 <tr>
-                    <td class="left">Peticiones</td>
+                    <td class="rp-first">Peticiones</td>
                     <td id="c-m1-pet-g">0</td><td id="c-m1-pet-p">0</td><td id="c-m1-pet-r">0</td>
                     <td id="c-m2-pet-g">0</td><td id="c-m2-pet-p">0</td><td id="c-m2-pet-r">0</td>
                     <td id="c-m3-pet-g">0</td><td id="c-m3-pet-p">0</td><td id="c-m3-pet-r">0</td>
-                    <td id="c-tot-pet-g" style="font-weight:bold;">0</td><td id="c-tot-pet-p" style="font-weight:bold;">0</td><td id="c-tot-pet-r" style="font-weight:bold;">0</td>
+                    <td id="c-tot-pet-g" class="rp-total-col">0</td><td id="c-tot-pet-p" class="rp-total-col">0</td><td id="c-tot-pet-r" class="rp-total-col">0</td>
                 </tr>
                 <tr>
-                    <td class="left">Tareas</td>
+                    <td class="rp-first">Tareas</td>
                     <td id="c-m1-tar" colspan="3">0</td>
                     <td id="c-m2-tar" colspan="3">0</td>
                     <td id="c-m3-tar" colspan="3">0</td>
-                    <td id="c-tot-tar" colspan="3" style="font-weight:bold;">0</td>
+                    <td id="c-tot-tar" colspan="3" class="rp-total-col">0</td>
                 </tr>
             </tbody>
         </table>
+        <p class="rp-note"><strong>Gen.</strong> generada · <strong>Part.</strong> participada · <strong>Rev.</strong> revisada. Las tareas corresponden a actuaciones de explotación.</p>
 
-        <div class="print-section-title" id="print-detail-title">2. Desglose justificativo detallado</div>
+        <h2 class="rp-title" id="print-detail-title">2. Desglose justificativo detallado</h2>
         <div id="print-table-zone"></div>
 
-        <div style="margin-top: 50px; display: block; text-align: right; font-size: 0.9rem;">
+        <section class="rp-sign">
             <p id="print-signature-date"></p>
-            <div style="margin-top: 60px; display: inline-block; width: 240px; border-top: 2px solid #000; text-align: center; padding-top: 8px; font-weight: bold;">
-                Firma del Responsable
-            </div>
-        </div>
+            <div class="rp-sign-box"><span>Firma del responsable</span></div>
+        </section>
     </div>
 
-    <script src="app.js?v=2.7.0"></script>
+    <script src="app.js?v=2.8.0"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.7.0';
+const APP_VERSION = '2.8.0';
 
 // ============================================
 // ICONOS (línea, heredan el color del texto)
@@ -1387,6 +1387,18 @@ const PrintManager = {
         DomUtils.setText(DomUtils.getById('c-tot-tar'),
             (counts.m1.tar + counts.m2.tar + counts.m3.tar).toString());
 
+        // Resumen del periodo (se calcula con los mismos datos que el cuadro de indicadores)
+        const totalInc = counts.m1.incG + counts.m1.incP + counts.m1.incR + counts.m2.incG + counts.m2.incP + counts.m2.incR + counts.m3.incG + counts.m3.incP + counts.m3.incR;
+        const totalPet = counts.m1.petG + counts.m1.petP + counts.m1.petR + counts.m2.petG + counts.m2.petP + counts.m2.petR + counts.m3.petG + counts.m3.petP + counts.m3.petR;
+        const totalTar = counts.m1.tar + counts.m2.tar + counts.m3.tar;
+        const activeDays = new Set(activeQuarterItems.map(item => item.date));
+        const remoteDays = new Set(activeQuarterItems.filter(item => item.remote === true).map(item => item.date));
+        DomUtils.setText(DomUtils.getById('rp-total'), activeQuarterItems.length.toString());
+        DomUtils.setText(DomUtils.getById('rp-inc'), totalInc.toString());
+        DomUtils.setText(DomUtils.getById('rp-pet'), totalPet.toString());
+        DomUtils.setText(DomUtils.getById('rp-tar'), totalTar.toString());
+        DomUtils.setText(DomUtils.getById('rp-tt'), `${remoteDays.size} / ${activeDays.size}`);
+
         const detailTitle = DomUtils.getById('print-detail-title');
         const tableZone = DomUtils.getById('print-table-zone');
         detailTitle.style.display = showDetails ? 'block' : 'none';
@@ -1394,19 +1406,20 @@ const PrintManager = {
         tableZone.innerHTML = "";
 
         if (showDetails) {
+            DomUtils.setText(detailTitle, `2. Desglose justificativo detallado (${activeQuarterItems.length} ${activeQuarterItems.length === 1 ? 'actuación' : 'actuaciones'})`);
             if (activeQuarterItems.length === 0) {
-                tableZone.innerHTML = `<p style="font-size:0.85rem; color:#64748b; font-style:italic;">No hay actuaciones detalladas registradas en este trimestre.</p>`;
+                tableZone.innerHTML = `<p class="rp-empty">No hay actuaciones detalladas registradas en este trimestre.</p>`;
             } else {
                 activeQuarterItems.sort((a, b) => TaskManager.compareItems(a, b));
                 let html = `
-                    <table class="print-table">
+                    <table class="rp-table rp-detail">
                         <thead>
                             <tr>
-                                <th style="width: 13%;">Fecha</th>
-                                <th style="width: 15%;">Tipo</th>
-                                <th style="width: 15%;">Participación</th>
-                                <th style="width: 15%;">ID</th>
-                                <th style="text-align: left;">Descripción</th>
+                                <th class="c-date">Fecha</th>
+                                <th class="c-type">Tipo</th>
+                                <th class="c-role">Particip.</th>
+                                <th class="c-id">ID</th>
+                                <th>Descripción</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1423,16 +1436,17 @@ const PrintManager = {
 
                     html += `
                         <tr>
-                            <td>${Formatters.formatDateDMY(item.date)}</td>
-                            <td>${displayType}</td>
-                            <td>${displayRole}</td>
-                            <td><strong>${displayTicket}</strong></td>
-                            <td class="left">${Validators.sanitizeText(finalDesc)}</td>
+                            <td class="c-date">${Formatters.formatDateDMY(item.date)}</td>
+                            <td class="c-type">${displayType}</td>
+                            <td class="c-role">${displayRole}</td>
+                            <td class="c-id">${Validators.sanitizeText(displayTicket)}</td>
+                            <td>${Validators.sanitizeText(finalDesc)}</td>
                         </tr>
                     `;
                 });
 
-                html += `</tbody></table>`;
+                html += `</tbody></table>
+                    <p class="rp-note"><strong>GEN</strong> generada · <strong>PART</strong> participada · <strong>REV</strong> revisada · <strong>INT</strong> intervenida. <strong>(*)</strong> Actuación realizada en teletrabajo.</p>`;
                 tableZone.innerHTML = html;
             }
         }
