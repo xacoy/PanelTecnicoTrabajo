@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.4.0';
+const APP_VERSION = '2.5.0';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -494,6 +494,25 @@ const LinksManager = {
 // FUNCIONES DE GESTIÓN DE WIDGETS
 // ============================================
 
+// Cabecera que minimiza / expande una caja (bloc rápido y listas). Solo dura la sesión.
+const NoteBox = {
+    bind(box, header, onExpand) {
+        header.addEventListener('click', (e) => {
+            if (e.target.closest('.header-actions')) return;
+            const collapsed = !box.classList.contains('collapsed');
+            box.classList.toggle('collapsed', collapsed);
+            header.setAttribute('aria-expanded', String(!collapsed));
+            if (!collapsed && onExpand) onExpand();
+            if (box._onToggle) box._onToggle(collapsed);
+        });
+        header.addEventListener('keydown', (e) => {
+            if (e.target !== header || (e.key !== 'Enter' && e.key !== ' ')) return;
+            e.preventDefault();
+            header.click();
+        });
+    }
+};
+
 const WidgetsManager = {
     render() {
         const container = DomUtils.getById('sidebar-container');
@@ -649,32 +668,61 @@ const WidgetsManager = {
         return [input, list];
     },
 
-    // Las listas usan el mismo estilo que el bloc rápido y están siempre abiertas
+    // Listas minimizadas durante la sesión (siempre se abren al cargar)
+    collapsedTodos: new WeakSet(),
+
+    // Las listas usan el mismo estilo que el bloc rápido
     createTodoBox(widget, idx) {
         const box = DomUtils.createEl('div', { class: 'quick-note-box todo-box' });
 
-        const header = DomUtils.createEl('div', { class: 'quick-note-header' });
-        header.appendChild(DomUtils.createEl('span', { class: 'quick-note-title', text: '✅ ' + widget.title }));
+        const header = DomUtils.createEl('div', {
+            class: 'quick-note-header',
+            attrs: { role: 'button', tabindex: '0', 'aria-expanded': 'true', title: 'Minimizar / expandir' }
+        });
+        const title = DomUtils.createEl('span', { class: 'quick-note-title' });
+        title.appendChild(DomUtils.createEl('span', { class: 'note-chevron', text: '▼', attrs: { 'aria-hidden': 'true' } }));
+        title.appendChild(document.createTextNode(' ✅ '));
+        title.appendChild(DomUtils.createEl('span', { class: 'note-title-text', text: widget.title }));
+        const done = widget.tasks.filter(task => task.d).length;
+        title.appendChild(DomUtils.createEl('span', {
+            class: 'counter-badge',
+            text: `${done}/${widget.tasks.length}`,
+            attrs: { title: 'Tareas hechas / total' }
+        }));
+        header.appendChild(title);
 
         const actions = DomUtils.createEl('div', { class: 'header-actions' });
         const btnEdit = DomUtils.createEl('button', {
             class: 'btn-action-icon',
             text: '✎',
-            attrs: { title: 'Renombrar', type: 'button' }
+            attrs: { title: 'Renombrar', type: 'button', 'aria-label': 'Renombrar lista' }
         });
         btnEdit.addEventListener('click', () => this.editTitle(idx));
         const btnDel = DomUtils.createEl('button', {
-            class: 'btn-action-icon',
+            class: 'btn-action-icon btn-danger-icon',
             text: '✕',
-            attrs: { title: 'Eliminar', type: 'button', style: 'color:#ef4444' }
+            attrs: { title: 'Eliminar', type: 'button', 'aria-label': 'Eliminar lista' }
         });
         btnDel.addEventListener('click', () => this.delete(idx));
         actions.appendChild(btnEdit);
         actions.appendChild(btnDel);
         header.appendChild(actions);
 
+        const body = DomUtils.createEl('div', { class: 'note-body' });
+        this.buildTodoBody(widget, idx).forEach(el => body.appendChild(el));
+
         box.appendChild(header);
-        this.buildTodoBody(widget, idx).forEach(el => box.appendChild(el));
+        box.appendChild(body);
+
+        if (this.collapsedTodos.has(widget)) {
+            box.classList.add('collapsed');
+            header.setAttribute('aria-expanded', 'false');
+        }
+        box._onToggle = (collapsed) => {
+            if (collapsed) this.collapsedTodos.add(widget);
+            else this.collapsedTodos.delete(widget);
+        };
+        NoteBox.bind(box, header);
         return box;
     },
 
@@ -1589,43 +1637,40 @@ const FieldSizes = {
         textarea.style.height = 'auto';
         const extra = textarea.offsetHeight - textarea.clientHeight;
         textarea.style.height = (textarea.scrollHeight + extra) + 'px';
-        if (textarea._syncLast) textarea._syncLast(Math.round(textarea.getBoundingClientRect().height));
     },
 
     fitAll() {
         DomUtils.queryAll('textarea[data-auto="1"]').forEach(t => this.fit(t));
     },
 
-    // Avisa con la nueva altura cuando el usuario redimensiona el campo a mano.
-    // Los cambios de ancho (columnas) solo reajustan los campos automáticos.
+    // Avisa con la nueva altura solo cuando el usuario arrastra la esquina inferior derecha.
+    // Los cambios de contenido o de ancho (columnas) no cuentan como ajuste manual.
     observe(el, onManual) {
-        if (!window.ResizeObserver) return;
-        let last = null;
-        let lastW = null;
-        el._syncLast = (h) => { last = h; };
-        new ResizeObserver(() => {
-            if (!el.offsetParent) return; // oculto (bloque minimizado)
+        el.addEventListener('pointerdown', (e) => {
             const rect = el.getBoundingClientRect();
-            const h = Math.round(rect.height);
-            const w = Math.round(rect.width);
-            if (last === null) {
-                last = h;
+            if (e.clientX < rect.right - 26 || e.clientY < rect.bottom - 26) return;
+            const startH = Math.round(rect.height);
+            window.addEventListener('pointerup', () => {
+                if (!el.offsetParent) return;
+                const h = Math.round(el.getBoundingClientRect().height);
+                if (h > 0 && Math.abs(h - startH) >= 2) onManual(h);
+            }, { once: true });
+        });
+
+        // Si cambia el ancho, los campos automáticos se reajustan al texto
+        if (window.ResizeObserver && el.tagName === 'TEXTAREA') {
+            let lastW = null;
+            new ResizeObserver(() => {
+                if (!el.offsetParent) return;
+                const w = Math.round(el.getBoundingClientRect().width);
+                if (lastW !== null && w !== lastW && el.dataset.auto === '1') this.fit(el);
                 lastW = w;
-                return;
-            }
-            if (w !== lastW) {
-                lastW = w;
-                if (el.tagName === 'TEXTAREA' && el.dataset.auto === '1') this.fit(el);
-                else last = h;
-                return;
-            }
-            if (h <= 0 || Math.abs(h - last) < 2) return;
-            last = h;
-            onManual(h);
-        }).observe(el);
+            }).observe(el);
+        }
     },
 
     initQuickNote() {
+        NoteBox.bind(DomUtils.getById('quick-note-box'), DomUtils.getById('quick-note-header'), () => this.fitAll());
         const area = DomUtils.getById('quick-note-area');
         const saved = parseInt(localStorage.getItem(this.QUICK_KEY), 10);
         if (saved > 0) {

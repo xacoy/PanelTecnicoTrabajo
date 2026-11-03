@@ -1762,6 +1762,93 @@ table.records-table tbody tr.record-row:hover td {
     box-shadow: 0 0 0 3px rgba(var(--secondary-rgb), 0.1);
 }
 
+/* Cabeceras de bloc rápido y listas */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.quick-note-header {
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 2px 2px 4px;
+    border-radius: 6px;
+}
+
+.quick-note-header:hover {
+    background: rgba(var(--primary-rgb), 0.08);
+}
+
+.quick-note-header .btn-action-icon {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+}
+
+.btn-action-icon.btn-danger-icon {
+    color: var(--danger);
+}
+
+.btn-action-icon.btn-danger-icon:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+.quick-note-title {
+    min-width: 0;
+    gap: 7px;
+    font-size: 0.74rem;
+}
+
+.note-title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.note-chevron {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 12px;
+    font-size: 0.62rem;
+    color: var(--primary-light);
+    transition: transform 0.2s ease;
+}
+
+.quick-note-box.collapsed .note-chevron {
+    transform: rotate(-90deg);
+}
+
+.quick-note-box.collapsed .note-body {
+    display: none;
+}
+
+.note-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quick-note-box .counter-badge {
+    margin-left: 4px;
+    font-size: 0.62rem;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--primary);
+}
+
+.todo-item {
+    padding: 6px 4px;
+    border-radius: 5px;
+}
+
+.todo-item:hover {
+    background: rgba(var(--primary-rgb), 0.08);
+}
+
 .quick-note-header {
     display: flex;
     align-items: center;

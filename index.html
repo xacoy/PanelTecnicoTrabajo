@@ -13,14 +13,14 @@
             if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
         } catch (e) {}
     </script>
-    <link rel="stylesheet" href="styles.css?v=2.4.0">
+    <link rel="stylesheet" href="styles.css?v=2.5.0">
 </head>
 <body>
     <!-- BARRA SUPERIOR -->
     <header class="global-top-bar" role="banner">
         <div class="global-title">
             ⚙️ Panel Técnico
-            <span class="badge-gov" id="app-version" title="Versión">v2.4.0</span>
+            <span class="badge-gov" id="app-version" title="Versión">v2.5.0</span>
         </div>
 
         <div class="top-bar-actions" role="toolbar" aria-label="Acciones globales">
@@ -189,15 +189,17 @@
                 </div>
             </div>
 
-            <div class="quick-note-box">
-                <div class="quick-note-header">
-                    <span class="quick-note-title">📝 Bloc Rápido</span>
+            <div class="quick-note-box" id="quick-note-box">
+                <div class="quick-note-header" id="quick-note-header" role="button" tabindex="0" aria-expanded="true" aria-controls="quick-note-body" title="Minimizar / expandir">
+                    <span class="quick-note-title"><span class="note-chevron" aria-hidden="true">▼</span> 📝 Bloc rápido</span>
                     <div class="header-actions">
-                        <button class="btn-action-icon" id="btn-copy-note" title="Copiar" aria-label="Copiar bloc">📋</button>
-                        <button class="btn-action-icon" id="btn-clear-note" title="Limpiar" aria-label="Limpiar bloc" style="color:#ef4444;">✕</button>
+                        <button type="button" class="btn-action-icon" id="btn-copy-note" title="Copiar" aria-label="Copiar bloc">📋</button>
+                        <button type="button" class="btn-action-icon btn-danger-icon" id="btn-clear-note" title="Limpiar" aria-label="Limpiar bloc">✕</button>
                     </div>
                 </div>
-                <textarea class="quick-note-textarea" id="quick-note-area" placeholder="Teléfonos, datos temporales..."></textarea>
+                <div class="note-body" id="quick-note-body">
+                    <textarea class="quick-note-textarea" id="quick-note-area" placeholder="Teléfonos, datos temporales..."></textarea>
+                </div>
             </div>
 
             <div id="sidebar-container" style="display:flex; flex-direction:column; gap:10px;" role="region" aria-label="Widgets"></div>
@@ -354,6 +356,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=2.4.0"></script>
+    <script src="app.js?v=2.5.0"></script>
 </body>
 </html>
