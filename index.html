@@ -13,14 +13,14 @@
             if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
         } catch (e) {}
     </script>
-    <link rel="stylesheet" href="styles.css?b=20261103h">
+    <link rel="stylesheet" href="styles.css?b=20261103i">
 </head>
 <body>
     <!-- BARRA SUPERIOR -->
     <header class="global-top-bar" role="banner">
         <div class="global-title">
             <i class="ico" data-icon="cog"></i> Panel Técnico
-            <span class="badge-gov" id="app-version" title="Versión">v2.8.1</span>
+            <span class="badge-gov" id="app-version" title="Versión">v2.9.0</span>
         </div>
 
         <div class="top-bar-actions" role="toolbar" aria-label="Acciones globales">
@@ -269,6 +269,30 @@
         </div>
     </div>
 
+    <!-- MODAL DE CATEGORÍA -->
+    <div class="edit-modal-overlay" id="catModalOverlay" role="dialog" aria-modal="true" aria-labelledby="cat-modal-title">
+        <div class="edit-modal">
+            <h3 id="cat-modal-title">Editar categoría</h3>
+
+            <label for="cat-name">Nombre</label>
+            <input type="text" id="cat-name" placeholder="Nombre de la categoría" autocomplete="off">
+
+            <label id="cat-color-label">Color general (para los enlaces que no tengan color propio)</label>
+            <div class="link-color-row" role="radiogroup" aria-labelledby="cat-color-label">
+                <div class="link-color-presets" id="cat-color-presets"></div>
+                <input type="color" id="cat-color-input" value="#3b82f6" title="Color personalizado" aria-label="Color personalizado">
+                <button type="button" class="btn-top btn-compact" id="cat-color-reset" title="Volver al color original de la categoría">Por defecto</button>
+            </div>
+
+            <p class="link-modal-error" id="cat-modal-error" role="alert"></p>
+
+            <div class="edit-modal-actions">
+                <button type="button" class="btn-top" id="btn-cat-cancel">Cancelar</button>
+                <button type="button" class="btn-top" id="btn-cat-save">Guardar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE CONFIRMACIÓN DESTRUCTIVA -->
     <div class="edit-modal-overlay" id="dangerModal" role="dialog" aria-modal="true" aria-labelledby="danger-title">
         <div class="edit-modal" style="max-width: 420px;">
@@ -362,6 +386,6 @@
         </section>
     </div>
 
-    <script src="app.js?b=20261103h"></script>
+    <script src="app.js?b=20261103i"></script>
 </body>
 </html>

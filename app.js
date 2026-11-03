@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.8.1';
+const APP_VERSION = '2.9.0';
 
 // ============================================
 // ICONOS (línea, heredan el color del texto)
@@ -319,6 +319,43 @@ const Storage = {
 // FUNCIONES DE GESTIÓN DE ENLACES
 // ============================================
 
+// Selector de color (colores predefinidos, color libre y "Por defecto") para las ventanas de enlace y categoría
+const ColorPicker = {
+    PRESETS: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6', '#8b5cf6', '#ec4899', '#94a3b8'],
+
+    create(prefix) {
+        const presets = DomUtils.getById(`${prefix}-color-presets`);
+        const input = DomUtils.getById(`${prefix}-color-input`);
+        const reset = DomUtils.getById(`${prefix}-color-reset`);
+        let value = null;
+
+        const set = (color) => {
+            value = LinksManager.isValidColor(color) ? color.toLowerCase() : null;
+            presets.querySelectorAll('.link-color-dot').forEach(btn => {
+                const on = btn.dataset.color === value;
+                btn.classList.toggle('active', on);
+                btn.setAttribute('aria-checked', String(on));
+            });
+            if (value) input.value = value;
+            reset.classList.toggle('active', !value);
+        };
+
+        this.PRESETS.forEach(color => {
+            const btn = DomUtils.createEl('button', {
+                class: 'link-color-dot',
+                attrs: { type: 'button', role: 'radio', 'aria-checked': 'false', 'aria-label': 'Color ' + color, title: color, 'data-color': color }
+            });
+            btn.style.background = color;
+            btn.addEventListener('click', () => set(color));
+            presets.appendChild(btn);
+        });
+        input.addEventListener('input', (e) => set(e.target.value));
+        reset.addEventListener('click', () => set(null));
+
+        return { set, get: () => value };
+    }
+};
+
 const LinksManager = {
     render() {
         const container = DomUtils.getById('links-container');
@@ -336,10 +373,12 @@ const LinksManager = {
     },
 
     createCategoryElement(category, catIdx) {
+        const hasColor = this.isValidColor(category.c);
         const categoryDiv = DomUtils.createEl('div', {
-            class: `category ${category.min ? 'minimized' : ''}`,
+            class: `category ${category.min ? 'minimized' : ''} ${hasColor ? 'has-cat-color' : ''}`,
             attrs: { id: category.id }
         });
+        if (hasColor) categoryDiv.style.setProperty('--cat-color', category.c);
 
         // Encabezado
         const header = DomUtils.createEl('div', { class: 'category-header' });
@@ -348,6 +387,13 @@ const LinksManager = {
         title.addEventListener('click', () => this.toggleMinimize(catIdx));
 
         const actions = DomUtils.createEl('div', { class: 'header-actions' });
+        const btnEditCat = DomUtils.createEl('button', {
+            class: 'btn-action-icon',
+            html: Icons.svg('pencil'),
+            attrs: { title: 'Editar categoría (nombre y color general)', type: 'button', 'aria-label': 'Editar categoría' }
+        });
+        btnEditCat.addEventListener('click', () => this.openCategoryModal(catIdx));
+
         const btnAdd = DomUtils.createEl('button', {
             class: 'btn-action-icon',
             text: '+',
@@ -362,6 +408,7 @@ const LinksManager = {
         });
         btnMin.addEventListener('click', () => this.toggleMinimize(catIdx));
 
+        actions.appendChild(btnEditCat);
         actions.appendChild(btnAdd);
         actions.appendChild(btnMin);
         header.appendChild(title);
@@ -440,23 +487,13 @@ const LinksManager = {
         return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
     },
 
-    PRESET_COLORS: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6', '#8b5cf6', '#ec4899', '#94a3b8'],
-    modal: { catIdx: null, linkIdx: null, color: null },
+    modal: { catIdx: null, linkIdx: null },
+    catModal: { catIdx: null },
 
     initModal() {
-        const presets = DomUtils.getById('link-color-presets');
-        this.PRESET_COLORS.forEach(color => {
-            const btn = DomUtils.createEl('button', {
-                class: 'link-color-dot',
-                attrs: { type: 'button', role: 'radio', 'aria-checked': 'false', 'aria-label': 'Color ' + color, title: color, 'data-color': color }
-            });
-            btn.style.background = color;
-            btn.addEventListener('click', () => this.setModalColor(color));
-            presets.appendChild(btn);
-        });
+        this.picker = ColorPicker.create('link');
+        this.catPicker = ColorPicker.create('cat');
 
-        DomUtils.getById('link-color-input').addEventListener('input', (e) => this.setModalColor(e.target.value));
-        DomUtils.getById('link-color-reset').addEventListener('click', () => this.setModalColor(null));
         DomUtils.getById('btn-link-cancel').addEventListener('click', () => this.closeModal());
         DomUtils.getById('btn-link-save').addEventListener('click', () => this.saveModal());
         DomUtils.getById('linkModalOverlay').addEventListener('click', (e) => {
@@ -467,20 +504,51 @@ const LinksManager = {
                 if (e.key === 'Enter') this.saveModal();
             });
         });
+
+        DomUtils.getById('btn-cat-cancel').addEventListener('click', () => this.closeCategoryModal());
+        DomUtils.getById('btn-cat-save').addEventListener('click', () => this.saveCategoryModal());
+        DomUtils.getById('catModalOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'catModalOverlay') this.closeCategoryModal();
+        });
+        DomUtils.getById('cat-name').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') this.saveCategoryModal();
+        });
+
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && DomUtils.getById('linkModalOverlay').classList.contains('open')) this.closeModal();
+            if (e.key !== 'Escape') return;
+            if (DomUtils.getById('linkModalOverlay').classList.contains('open')) this.closeModal();
+            if (DomUtils.getById('catModalOverlay').classList.contains('open')) this.closeCategoryModal();
         });
     },
 
-    setModalColor(color) {
-        this.modal.color = this.isValidColor(color) ? color.toLowerCase() : null;
-        DomUtils.queryAll('#link-color-presets .link-color-dot').forEach(btn => {
-            const on = btn.dataset.color === this.modal.color;
-            btn.classList.toggle('active', on);
-            btn.setAttribute('aria-checked', String(on));
-        });
-        if (this.modal.color) DomUtils.getById('link-color-input').value = this.modal.color;
-        DomUtils.getById('link-color-reset').classList.toggle('active', !this.modal.color);
+    openCategoryModal(catIdx) {
+        const category = State.linkData[catIdx];
+        this.catModal.catIdx = catIdx;
+        DomUtils.getById('cat-name').value = category.title;
+        DomUtils.getById('cat-color-input').value = '#3b82f6';
+        this.catPicker.set(category.c);
+        DomUtils.setText(DomUtils.getById('cat-modal-error'), '');
+        DomUtils.getById('catModalOverlay').classList.add('open');
+        DomUtils.getById('cat-name').focus();
+    },
+
+    closeCategoryModal() {
+        DomUtils.getById('catModalOverlay').classList.remove('open');
+    },
+
+    saveCategoryModal() {
+        const name = DomUtils.getById('cat-name').value.trim();
+        if (!name) {
+            DomUtils.setText(DomUtils.getById('cat-modal-error'), 'Escribe un nombre para la categoría.');
+            return;
+        }
+        const category = State.linkData[this.catModal.catIdx];
+        category.title = name;
+        const color = this.catPicker.get();
+        if (color) category.c = color;
+        else delete category.c;
+        this.closeCategoryModal();
+        this.render();
     },
 
     openModal(catIdx, linkIdx) {
@@ -491,7 +559,7 @@ const LinksManager = {
         DomUtils.getById('link-name').value = link ? link.n : '';
         DomUtils.getById('link-url').value = link ? link.u : '';
         DomUtils.getById('link-color-input').value = '#3b82f6';
-        this.setModalColor(link ? link.c : null);
+        this.picker.set(link ? link.c : null);
         DomUtils.setText(DomUtils.getById('link-modal-error'), '');
         DomUtils.getById('linkModalOverlay').classList.add('open');
         DomUtils.getById('link-name').focus();
@@ -516,7 +584,8 @@ const LinksManager = {
         }
 
         const link = { n: name, u: url };
-        if (this.modal.color) link.c = this.modal.color;
+        const color = this.picker.get();
+        if (color) link.c = color;
 
         const links = State.linkData[this.modal.catIdx].links;
         if (this.modal.linkIdx === null) links.push(link);

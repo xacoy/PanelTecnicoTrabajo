@@ -1072,6 +1072,30 @@ input:focus, textarea:focus, button:focus {
     background: var(--primary);
 }
 
+/* Color general de una categoría (para los enlaces sin color propio) */
+#links-container .category.has-cat-color .link-card {
+    border-left-color: var(--cat-color);
+}
+
+#links-container .category.has-cat-color .link-card .dot {
+    background: var(--cat-color);
+}
+
+#links-container .category.has-cat-color .link-card:hover {
+    background: color-mix(in srgb, var(--cat-color) 18%, transparent);
+    border-color: var(--cat-color);
+    color: var(--text-main);
+}
+
+#links-container .category.has-cat-color .category-header h3::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    background: var(--cat-color);
+}
+
 /* Color de resaltado propio de un enlace */
 #links-container .category .link-card.has-color {
     border-left-color: var(--link-color);
