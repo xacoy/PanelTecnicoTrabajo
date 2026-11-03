@@ -2,6 +2,9 @@
 
 Criterio: solo sube la versión cuando cambia el **funcionamiento** (el número central en cambios nuevos, el último en correcciones de errores). Los cambios solo gráficos (colores, estilos, iconos, maquetación) no cambian el número.
 
+## 2.8.1
+- Informe: gráfica de participación por tipo (generadas, participadas y revisadas) a todo el ancho, bajo el cuadro de indicadores.
+
 ## 2.8.0
 - Informe: resumen con el total de actuaciones (suma de incidencias, peticiones y tareas) y días de teletrabajo, leyendas de siglas y numeración de páginas.
 
