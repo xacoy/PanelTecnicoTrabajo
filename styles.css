@@ -1087,15 +1087,6 @@ input:focus, textarea:focus, button:focus {
     color: var(--text-main);
 }
 
-#links-container .category.has-cat-color .category-header h3::before {
-    content: "";
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    margin-right: 8px;
-    background: var(--cat-color);
-}
-
 /* Color de resaltado propio de un enlace */
 #links-container .category .link-card.has-color {
     border-left-color: var(--link-color);
