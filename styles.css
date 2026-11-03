@@ -2424,6 +2424,50 @@ input[type="checkbox"] {
         font-weight: 700;
     }
 
+    /* Cuadro de indicadores: cada mes se distingue con su cabecera, su tono de fondo y una línea divisoria gruesa */
+    .rp-indicators th#p-m1,
+    .rp-indicators th#p-m3 {
+        background: #1f3a5f;
+        color: #fff;
+    }
+
+    .rp-indicators th#p-m2 {
+        background: #3f6494;
+        color: #fff;
+    }
+
+    .rp-indicators thead tr:first-child th.rp-total-col {
+        background: #5a6578;
+        color: #fff;
+    }
+
+    .rp-indicators thead tr:first-child th:not(.rp-first),
+    .rp-indicators thead tr:nth-child(2) th:nth-child(3n+1),
+    .rp-indicators tbody td:nth-child(3n+2),
+    .rp-indicators tbody tr:last-child td:not(.rp-first) {
+        border-left: 2px solid #1f3a5f;
+    }
+
+    .rp-indicators thead tr:nth-child(2) th:nth-child(-n+3),
+    .rp-indicators thead tr:nth-child(2) th:nth-child(n+7):nth-child(-n+9),
+    .rp-indicators td[id^="c-m1-"],
+    .rp-indicators td[id^="c-m3-"] {
+        background: #f3f6fa;
+    }
+
+    .rp-indicators thead tr:nth-child(2) th:nth-child(n+4):nth-child(-n+6),
+    .rp-indicators td[id^="c-m2-"] {
+        background: #dfe7f2;
+    }
+
+    .rp-indicators thead tr:nth-child(2) th:nth-child(-n+9) {
+        color: #1f3a5f;
+    }
+
+    .rp-indicators td.rp-first {
+        font-weight: 600;
+    }
+
     .rp-note {
         margin-top: 5pt;
         font-size: 7.5pt;
