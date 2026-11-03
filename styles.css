@@ -2454,6 +2454,24 @@ input[type="checkbox"] {
         font-weight: 600;
     }
 
+    .rp-chart {
+        margin-top: 10pt;
+        break-inside: avoid;
+    }
+
+    .rp-subtitle {
+        margin: 0 0 4pt;
+        font-size: 9.5pt;
+        font-weight: 700;
+        color: #1f3a5f;
+    }
+
+    .rp-chart svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
     .rp-note {
         margin-top: 5pt;
         font-size: 7.5pt;

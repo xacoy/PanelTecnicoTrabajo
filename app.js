@@ -1314,6 +1314,55 @@ const EditModal = {
 // ============================================
 
 const PrintManager = {
+    // Gráfica de barras al 100 % con el reparto generadas / participadas / revisadas por tipo.
+    // Usa exactamente los mismos totales que el cuadro de indicadores.
+    buildParticipationChart(counts) {
+        const sum = (type, role) => ['m1', 'm2', 'm3'].reduce((acc, m) => acc + counts[m][type + role], 0);
+        const types = [
+            { label: 'Incidencias', key: 'inc' },
+            { label: 'Peticiones', key: 'pet' }
+        ];
+        const roles = [
+            { label: 'Generadas', key: 'G', fill: '#1f3a5f', text: '#fff' },
+            { label: 'Participadas', key: 'P', fill: '#6f87aa', text: '#fff' },
+            { label: 'Revisadas', key: 'R', fill: '#c3d0e2', text: '#111' }
+        ];
+        const x0 = 110, barW = 470, rowH = 26, gap = 14;
+        let y = 6;
+        let svg = '';
+
+        types.forEach(type => {
+            const values = roles.map(role => sum(type.key, role.key));
+            const total = values.reduce((a, b) => a + b, 0);
+            svg += `<text x="${x0 - 10}" y="${y + 17}" font-size="11.5" font-weight="600" text-anchor="end" fill="#222">${type.label}</text>`;
+            if (total === 0) {
+                svg += `<rect x="${x0}" y="${y}" width="${barW}" height="${rowH}" fill="none" stroke="#7f8ea3" stroke-dasharray="4 3"/>`
+                    + `<text x="${x0 + barW / 2}" y="${y + 17}" font-size="10.5" font-style="italic" text-anchor="middle" fill="#666">sin registros</text>`;
+            } else {
+                let x = x0;
+                values.forEach((value, i) => {
+                    if (!value) return;
+                    const w = barW * value / total;
+                    svg += `<rect x="${x}" y="${y}" width="${w}" height="${rowH}" fill="${roles[i].fill}" stroke="#1f3a5f" stroke-width="0.8"/>`
+                        + `<text x="${x + w / 2}" y="${y + 17}" font-size="10.5" font-weight="700" text-anchor="middle" fill="${roles[i].text}">${value}</text>`;
+                    x += w;
+                });
+            }
+            svg += `<text x="${x0 + barW + 8}" y="${y + 17}" font-size="11" font-weight="700" fill="#1f3a5f">${total}</text>`;
+            y += rowH + gap;
+        });
+
+        roles.forEach((role, i) => {
+            svg += `<rect x="${x0 + i * 120}" y="${y + 2}" width="12" height="12" fill="${role.fill}" stroke="#1f3a5f" stroke-width="0.8"/>`
+                + `<text x="${x0 + i * 120 + 17}" y="${y + 12}" font-size="10.5" fill="#333">${role.label}</text>`;
+        });
+        const height = y + 20;
+
+        return `<h3 class="rp-subtitle">Participación por tipo</h3>`
+            + `<svg viewBox="0 0 660 ${height}" width="100%" role="img" font-family="'Segoe UI', Arial, sans-serif">${svg}</svg>`
+            + `<p class="rp-note">Reparto de incidencias y peticiones entre generadas, participadas y revisadas (cada barra es el 100 % de su tipo; el número a la derecha es el total).</p>`;
+    },
+
     generate(showDetails = true) {
         const cfgWorker = ReportConfig.get('worker');
         const currentYear = new Date().getFullYear().toString();
@@ -1386,6 +1435,8 @@ const PrintManager = {
             (counts.m1.petR + counts.m2.petR + counts.m3.petR).toString());
         DomUtils.setText(DomUtils.getById('c-tot-tar'),
             (counts.m1.tar + counts.m2.tar + counts.m3.tar).toString());
+
+        DomUtils.getById('rp-chart').innerHTML = this.buildParticipationChart(counts);
 
         // Resumen del periodo (se calcula con los mismos datos que el cuadro de indicadores)
         const totalInc = counts.m1.incG + counts.m1.incP + counts.m1.incR + counts.m2.incG + counts.m2.incP + counts.m2.incR + counts.m3.incG + counts.m3.incP + counts.m3.incR;
