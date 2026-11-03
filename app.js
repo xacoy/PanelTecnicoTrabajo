@@ -1327,28 +1327,28 @@ const PrintManager = {
             { label: 'Participadas', key: 'P', fill: '#6f87aa', text: '#fff' },
             { label: 'Revisadas', key: 'R', fill: '#c3d0e2', text: '#111' }
         ];
-        const x0 = 110, barW = 470, rowH = 26, gap = 14;
+        const width = 700, x0 = 118, barW = width - x0 - 1, rowH = 30, gap = 14;
         let y = 6;
         let svg = '';
 
         types.forEach(type => {
             const values = roles.map(role => sum(type.key, role.key));
             const total = values.reduce((a, b) => a + b, 0);
-            svg += `<text x="${x0 - 10}" y="${y + 17}" font-size="11.5" font-weight="600" text-anchor="end" fill="#222">${type.label}</text>`;
+            svg += `<text x="${x0 - 10}" y="${y + 13}" font-size="11.5" font-weight="600" text-anchor="end" fill="#222">${type.label}</text>`
+                + `<text x="${x0 - 10}" y="${y + 25}" font-size="9" text-anchor="end" fill="#555">${total} en total</text>`;
             if (total === 0) {
                 svg += `<rect x="${x0}" y="${y}" width="${barW}" height="${rowH}" fill="none" stroke="#7f8ea3" stroke-dasharray="4 3"/>`
-                    + `<text x="${x0 + barW / 2}" y="${y + 17}" font-size="10.5" font-style="italic" text-anchor="middle" fill="#666">sin registros</text>`;
+                    + `<text x="${x0 + barW / 2}" y="${y + 19}" font-size="10.5" font-style="italic" text-anchor="middle" fill="#666">sin registros</text>`;
             } else {
                 let x = x0;
                 values.forEach((value, i) => {
                     if (!value) return;
                     const w = barW * value / total;
                     svg += `<rect x="${x}" y="${y}" width="${w}" height="${rowH}" fill="${roles[i].fill}" stroke="#1f3a5f" stroke-width="0.8"/>`
-                        + `<text x="${x + w / 2}" y="${y + 17}" font-size="10.5" font-weight="700" text-anchor="middle" fill="${roles[i].text}">${value}</text>`;
+                        + `<text x="${x + w / 2}" y="${y + 19}" font-size="11" font-weight="700" text-anchor="middle" fill="${roles[i].text}">${value}</text>`;
                     x += w;
                 });
             }
-            svg += `<text x="${x0 + barW + 8}" y="${y + 17}" font-size="11" font-weight="700" fill="#1f3a5f">${total}</text>`;
             y += rowH + gap;
         });
 
@@ -1359,8 +1359,8 @@ const PrintManager = {
         const height = y + 20;
 
         return `<h3 class="rp-subtitle">Participación por tipo</h3>`
-            + `<svg viewBox="0 0 660 ${height}" width="100%" role="img" font-family="'Segoe UI', Arial, sans-serif">${svg}</svg>`
-            + `<p class="rp-note">Reparto de incidencias y peticiones entre generadas, participadas y revisadas (cada barra es el 100 % de su tipo; el número a la derecha es el total).</p>`;
+            + `<svg viewBox="0 0 ${width} ${height}" width="100%" role="img" font-family="'Segoe UI', Arial, sans-serif">${svg}</svg>`
+            + `<p class="rp-note">Reparto de incidencias y peticiones entre generadas, participadas y revisadas (cada barra es el 100 % de su tipo; a la izquierda, el total de cada tipo).</p>`;
     },
 
     generate(showDetails = true) {
