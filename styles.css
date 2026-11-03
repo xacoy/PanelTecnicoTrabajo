@@ -2440,20 +2440,14 @@ input[type="checkbox"] {
         border-left: 2px solid #1f3a5f;
     }
 
-    .rp-indicators thead tr:nth-child(2) th:nth-child(-n+3),
-    .rp-indicators thead tr:nth-child(2) th:nth-child(n+7):nth-child(-n+9),
-    .rp-indicators td[id^="c-m1-"],
-    .rp-indicators td[id^="c-m3-"] {
-        background: #f3f6fa;
-    }
-
-    .rp-indicators thead tr:nth-child(2) th:nth-child(n+4):nth-child(-n+6),
-    .rp-indicators td[id^="c-m2-"] {
-        background: #dfe7f2;
-    }
-
-    .rp-indicators thead tr:nth-child(2) th:nth-child(-n+9) {
+    /* Mismo sombreado en todas las columnas (meses y totales) */
+    .rp-indicators thead tr:nth-child(2) th {
+        background: #e8edf4;
         color: #1f3a5f;
+    }
+
+    .rp-indicators tbody td:not(.rp-first) {
+        background: #f3f6fa;
     }
 
     .rp-indicators td.rp-first {
