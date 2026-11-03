@@ -3,7 +3,50 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.5.2';
+const APP_VERSION = '2.6.0';
+
+// ============================================
+// ICONOS (línea, heredan el color del texto)
+// ============================================
+
+const Icons = {
+    paths: {
+        link: ['M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71', 'M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'],
+        clipboard: ['M8 4h8v3H8z', 'M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2', 'M9 13h6', 'M9 17h4'],
+        pin: ['M12 17v5', 'M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z'],
+        refresh: ['M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8', 'M3 3v5h5', 'M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16', 'M16 16h5v5'],
+        more: ['M12 12h.01', 'M19 12h.01', 'M5 12h.01'],
+        pencil: ['M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z', 'm15 5 4 4'],
+        copy: ['M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2z', 'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'],
+        trash: ['M3 6h18', 'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6', 'M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'],
+        x: ['M18 6 6 18', 'm6 6 12 12'],
+        note: ['M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z', 'M15 3v6h6'],
+        listcheck: ['m9 11 3 3L22 4', 'M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'],
+        plus: ['M5 12h14', 'M12 5v14'],
+        chev: ['m6 9 6 6 6-6'],
+        calendar: ['M8 2v4', 'M16 2v4', 'M3 10h18', 'M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z'],
+        chart: ['M3 3v18h18', 'M18 17V9', 'M13 17V5', 'M8 17v-3'],
+        cog: ['M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z'],
+        download: ['M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4', 'm7 10 5 5 5-5', 'M12 15V3'],
+        upload: ['M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4', 'm17 8-5-5-5 5', 'M12 3v12'],
+        alert: ['m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3', 'M12 9v4', 'M12 17h.01'],
+        user: ['M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2', 'M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],
+        printer: ['M6 9V2h12v7', 'M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2', 'M6 14h12v8H6z'],
+        file: ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', 'M14 2v6h6', 'M16 13H8', 'M16 17H8'],
+        sliders: ['M4 21v-7', 'M4 10V3', 'M12 21v-9', 'M12 8V3', 'M20 21v-5', 'M20 12V3', 'M1 14h6', 'M9 8h6', 'M17 16h6']
+    },
+
+    svg(name) {
+        const parts = (this.paths[name] || []).map(d => `<path d="${d}"/>`).join('');
+        return `<svg class="ico-svg" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${parts}</svg>`;
+    },
+
+    apply(root = document) {
+        root.querySelectorAll('i[data-icon]').forEach(el => {
+            el.innerHTML = this.svg(el.dataset.icon);
+        });
+    }
+};
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -494,7 +537,7 @@ const LinksManager = {
 // FUNCIONES DE GESTIÓN DE WIDGETS
 // ============================================
 
-// Cabecera que minimiza / expande una caja (bloc rápido y listas). Solo dura la sesión.
+// Cabecera que minimiza / expande una caja (bloc de notas y listas). Solo dura la sesión.
 const NoteBox = {
     bind(box, header, onExpand) {
         header.addEventListener('click', (e) => {
@@ -518,7 +561,7 @@ const WidgetsManager = {
         const container = DomUtils.getById('sidebar-container');
         container.innerHTML = '';
 
-        // Las listas van primero (debajo del bloc rápido) y después las notas
+        // Las listas van primero (debajo del bloc de notas) y después las notas
         const order = State.widgets.map((widget, idx) => idx)
             .sort((a, b) => (State.widgets[a].type === 'todo' ? 0 : 1) - (State.widgets[b].type === 'todo' ? 0 : 1));
         order.forEach(idx => {
@@ -532,7 +575,7 @@ const WidgetsManager = {
         Storage.saveWidgets(State.widgets);
     },
 
-    // Las notas usan el mismo estilo que el bloc rápido y las listas
+    // Las notas usan el mismo estilo que el bloc de notas y las listas
     createWidgetElement(widget, idx) {
         const box = DomUtils.createEl('div', { class: 'quick-note-box note-box' });
 
@@ -541,21 +584,21 @@ const WidgetsManager = {
             attrs: { role: 'button', tabindex: '0', 'aria-expanded': String(!widget.min), title: 'Minimizar / expandir' }
         });
         const title = DomUtils.createEl('span', { class: 'quick-note-title' });
-        title.appendChild(DomUtils.createEl('span', { class: 'note-chevron', text: '▼', attrs: { 'aria-hidden': 'true' } }));
-        title.appendChild(document.createTextNode(' 📄 '));
+        title.appendChild(DomUtils.createEl('span', { class: 'note-chevron', html: Icons.svg('chev'), attrs: { 'aria-hidden': 'true' } }));
+        title.appendChild(DomUtils.createEl('span', { class: 'note-icon', html: Icons.svg('note') }));
         title.appendChild(DomUtils.createEl('span', { class: 'note-title-text', text: widget.title }));
         header.appendChild(title);
 
         const actions = DomUtils.createEl('div', { class: 'header-actions' });
         const btnEdit = DomUtils.createEl('button', {
             class: 'btn-action-icon',
-            text: '✎',
+            html: Icons.svg('pencil'),
             attrs: { title: 'Renombrar', type: 'button', 'aria-label': 'Renombrar nota' }
         });
         btnEdit.addEventListener('click', () => this.editTitle(idx));
         const btnDel = DomUtils.createEl('button', {
             class: 'btn-action-icon btn-danger-icon',
-            text: '✕',
+            html: Icons.svg('x'),
             attrs: { title: 'Eliminar', type: 'button', 'aria-label': 'Eliminar nota' }
         });
         btnDel.addEventListener('click', () => this.delete(idx));
@@ -653,7 +696,7 @@ const WidgetsManager = {
     // Listas minimizadas durante la sesión (siempre se abren al cargar)
     collapsedTodos: new WeakSet(),
 
-    // Las listas usan el mismo estilo que el bloc rápido
+    // Las listas usan el mismo estilo que el bloc de notas
     createTodoBox(widget, idx) {
         const box = DomUtils.createEl('div', { class: 'quick-note-box todo-box' });
 
@@ -662,8 +705,8 @@ const WidgetsManager = {
             attrs: { role: 'button', tabindex: '0', 'aria-expanded': 'true', title: 'Minimizar / expandir' }
         });
         const title = DomUtils.createEl('span', { class: 'quick-note-title' });
-        title.appendChild(DomUtils.createEl('span', { class: 'note-chevron', text: '▼', attrs: { 'aria-hidden': 'true' } }));
-        title.appendChild(document.createTextNode(' ✅ '));
+        title.appendChild(DomUtils.createEl('span', { class: 'note-chevron', html: Icons.svg('chev'), attrs: { 'aria-hidden': 'true' } }));
+        title.appendChild(DomUtils.createEl('span', { class: 'note-icon', html: Icons.svg('listcheck') }));
         title.appendChild(DomUtils.createEl('span', { class: 'note-title-text', text: widget.title }));
         const done = widget.tasks.filter(task => task.d).length;
         title.appendChild(DomUtils.createEl('span', {
@@ -676,13 +719,13 @@ const WidgetsManager = {
         const actions = DomUtils.createEl('div', { class: 'header-actions' });
         const btnEdit = DomUtils.createEl('button', {
             class: 'btn-action-icon',
-            text: '✎',
+            html: Icons.svg('pencil'),
             attrs: { title: 'Renombrar', type: 'button', 'aria-label': 'Renombrar lista' }
         });
         btnEdit.addEventListener('click', () => this.editTitle(idx));
         const btnDel = DomUtils.createEl('button', {
             class: 'btn-action-icon btn-danger-icon',
-            text: '✕',
+            html: Icons.svg('x'),
             attrs: { title: 'Eliminar', type: 'button', 'aria-label': 'Eliminar lista' }
         });
         btnDel.addEventListener('click', () => this.delete(idx));
@@ -1038,7 +1081,7 @@ const TaskManager = {
         });
 
         DomUtils.setText(DomUtils.getById('records-count'),
-            `${filtered.length} actuaciones`);
+            `${filtered.length} ${filtered.length === 1 ? 'actuación' : 'actuaciones'}`);
 
         if (filtered.length === 0) {
             const tr = DomUtils.createEl('tr');
@@ -1116,21 +1159,21 @@ const TaskManager = {
 
             const btnEdit = DomUtils.createEl('button', {
                 class: 'btn-tbl-action',
-                text: '✏️',
+                html: Icons.svg('pencil'),
                 attrs: { title: 'Editar', type: 'button' }
             });
             btnEdit.addEventListener('click', () => EditModal.open(item.id_key));
 
             const btnClone = DomUtils.createEl('button', {
                 class: 'btn-tbl-action',
-                text: '📋',
+                html: Icons.svg('copy'),
                 attrs: { title: 'Clonar (fecha hoy)', type: 'button' }
             });
             btnClone.addEventListener('click', () => this.cloneItem(item.id_key));
 
             const btnDel = DomUtils.createEl('button', {
                 class: 'btn-tbl-action btn-tbl-del',
-                text: '🗑️',
+                html: Icons.svg('trash'),
                 attrs: { title: 'Eliminar', type: 'button' }
             });
             btnDel.addEventListener('click', () => this.deleteItem(item.id_key));
@@ -1556,11 +1599,14 @@ const Utils = {
             }
         };
 
+        icon.innerHTML = Icons.svg('chev');
         const setCollapsed = (collapsed) => {
             content.classList.toggle('collapsed', collapsed);
-            icon.textContent = collapsed ? '▶' : '▼';
+            icon.classList.toggle('is-collapsed', collapsed);
             header.setAttribute('aria-expanded', String(!collapsed));
         };
+
+        setCollapsed(content.classList.contains('collapsed'));
 
         const saved = readState();
         if (typeof saved[key] === 'boolean') setCollapsed(saved[key]);
@@ -1733,6 +1779,11 @@ const Layout = {
     },
 
     toggle(panel) {
+        if (window.innerWidth <= 1080) {
+            this.mobilePanel = panel;
+            this.apply();
+            return;
+        }
         const next = { ...this.visible, [panel]: !this.visible[panel] };
         if (!this.PANELS.some(p => next[p])) return; // siempre queda uno visible
         this.visible = next;
@@ -1744,13 +1795,14 @@ const Layout = {
     // Reparte el espacio: el Gestor ocupa el sobrante; si está oculto, lo hace el primer panel visible
     apply() {
         const wide = window.innerWidth > 1080;
-        const shown = this.PANELS.filter(p => this.visible[p]);
+        const eff = wide ? this.visible : { links: false, gestor: false, widgets: false, [this.mobilePanel || 'gestor']: true };
+        const shown = this.PANELS.filter(p => eff[p]);
         const flexPanel = this.visible.gestor ? 'gestor' : shown[0];
 
         this.PANELS.forEach(p => {
             const el = this.els[p];
-            el.classList.toggle('panel-hidden', !this.visible[p]);
-            if (!this.visible[p] || !wide) {
+            el.classList.toggle('panel-hidden', !eff[p]);
+            if (!eff[p] || !wide) {
                 el.style.width = '';
                 el.style.flex = '';
             } else if (p === flexPanel) {
@@ -1767,7 +1819,7 @@ const Layout = {
         this.resizer2.classList.toggle('panel-hidden', !(v.gestor && v.widgets));
 
         DomUtils.queryAll('[data-panel-toggle]').forEach(btn => {
-            const on = this.visible[btn.dataset.panelToggle];
+            const on = eff[btn.dataset.panelToggle];
             btn.classList.toggle('active', on);
             btn.setAttribute('aria-pressed', String(on));
         });
@@ -1997,6 +2049,7 @@ const run = (fn) => {
 
 document.addEventListener('DOMContentLoaded', async () => {
     // El menú "⋯" se activa primero, antes de cargar datos
+    run(() => Icons.apply());
     run(() => MoreMenu.init());
     run(() => LinksManager.initModal());
 

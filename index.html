@@ -13,42 +13,42 @@
             if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
         } catch (e) {}
     </script>
-    <link rel="stylesheet" href="styles.css?v=2.5.2">
+    <link rel="stylesheet" href="styles.css?v=2.6.0">
 </head>
 <body>
     <!-- BARRA SUPERIOR -->
     <header class="global-top-bar" role="banner">
         <div class="global-title">
-            ⚙️ Panel Técnico
-            <span class="badge-gov" id="app-version" title="Versión">v2.5.2</span>
+            <i class="ico" data-icon="cog"></i> Panel Técnico
+            <span class="badge-gov" id="app-version" title="Versión">v2.6.0</span>
         </div>
 
         <div class="top-bar-actions" role="toolbar" aria-label="Acciones globales">
             <div class="tb-group tb-views" role="group" aria-label="Apartados visibles">
-                <button type="button" class="btn-top btn-view active" data-panel-toggle="links" aria-pressed="true" title="Mostrar / ocultar Enlaces">🔗 <span class="tb-text">Enlaces</span></button>
-                <button type="button" class="btn-top btn-view active" data-panel-toggle="gestor" aria-pressed="true" title="Mostrar / ocultar Gestor de trabajo">📋 <span class="tb-text">Gestor</span></button>
-                <button type="button" class="btn-top btn-view active" data-panel-toggle="widgets" aria-pressed="true" title="Mostrar / ocultar Notas">📌 <span class="tb-text">Notas</span></button>
+                <button type="button" class="btn-top btn-view active" data-panel-toggle="links" aria-pressed="true" title="Mostrar / ocultar Enlaces"><i class="ico" data-icon="link"></i> <span class="tb-text">Enlaces</span></button>
+                <button type="button" class="btn-top btn-view active" data-panel-toggle="gestor" aria-pressed="true" title="Mostrar / ocultar Gestor de trabajo"><i class="ico" data-icon="clipboard"></i> <span class="tb-text">Gestor</span></button>
+                <button type="button" class="btn-top btn-view active" data-panel-toggle="widgets" aria-pressed="true" title="Mostrar / ocultar Notas"><i class="ico" data-icon="pin"></i> <span class="tb-text">Notas</span></button>
             </div>
 
             <div class="tb-group" role="group" aria-label="Página">
-                <button class="btn-top" id="btn-reload" title="Recargar la página" aria-label="Recargar la página">🔄 <span class="tb-text">Recargar</span></button>
+                <button class="btn-top" id="btn-reload" title="Recargar la página" aria-label="Recargar la página"><i class="ico" data-icon="refresh"></i> <span class="tb-text">Recargar</span></button>
                 <div class="more-wrap">
-                    <button class="btn-top btn-more" id="btn-menu-danger" aria-haspopup="true" aria-expanded="false" aria-controls="dangerMenu" title="Más opciones" aria-label="Más opciones">⋯</button>
+                    <button class="btn-top btn-more" id="btn-menu-danger" aria-haspopup="true" aria-expanded="false" aria-controls="dangerMenu" title="Más opciones" aria-label="Más opciones"><i class="ico" data-icon="more"></i></button>
                     <div id="dangerMenu" class="more-menu" hidden>
                         <div class="menu-label">Datos</div>
-                        <button type="button" class="menu-item" id="btn-save-backup" data-menu-close>💾 Guardar copia de seguridad</button>
-                        <button type="button" class="menu-item" id="btn-load-backup" data-menu-close>📂 Cargar copia de seguridad</button>
+                        <button type="button" class="menu-item" id="btn-save-backup" data-menu-close><i class="ico" data-icon="download"></i> Guardar copia de seguridad</button>
+                        <button type="button" class="menu-item" id="btn-load-backup" data-menu-close><i class="ico" data-icon="upload"></i> Cargar copia de seguridad</button>
                         <input type="file" id="global-import-input" style="display: none;" accept=".json">
 
                         <div class="menu-label">Tema de color</div>
                         <div id="themeGrid" role="radiogroup" aria-label="Tema de color"></div>
 
                         <div class="menu-label">Vista</div>
-                        <button type="button" class="menu-item" id="btn-reset-layout" data-menu-close>⟨⟩ Restablecer tamaños de paneles y campos</button>
+                        <button type="button" class="menu-item" id="btn-reset-layout" data-menu-close><i class="ico" data-icon="sliders"></i> Restablecer tamaños de paneles y campos</button>
 
                         <div class="menu-label menu-label-danger">Zona de peligro</div>
-                        <button type="button" class="menu-item danger" id="btn-clear-quarter-menu" data-menu-close>🗑️ Borrar trimestre actual</button>
-                        <button type="button" class="menu-item danger" id="btn-reset-all-menu" data-menu-close>⚠️ Limpiar todo</button>
+                        <button type="button" class="menu-item danger" id="btn-clear-quarter-menu" data-menu-close><i class="ico" data-icon="trash"></i> Borrar trimestre actual</button>
+                        <button type="button" class="menu-item danger" id="btn-reset-all-menu" data-menu-close><i class="ico" data-icon="alert"></i> Limpiar todo</button>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
         <!-- COLUMNA 1: ENLACES -->
         <section class="links-col" id="colLinks" role="navigation" aria-label="Enlaces útiles">
             <div class="block-header">
-                <h2>🔗 Enlaces</h2>
+                <h2><i class="ico" data-icon="link"></i> Enlaces</h2>
                 <span class="block-badge" id="categories-count">5 Categorías</span>
             </div>
             <div class="links-grid" id="links-container" role="list"></div>
@@ -72,15 +72,15 @@
         <!-- COLUMNA 2: GESTOR DE TRABAJO -->
         <section class="gestor-col" id="colGestor" role="region" aria-label="Gestor de trabajo">
             <div class="block-header">
-                <h2>📋 Gestor de Trabajo</h2>
-                <span class="block-badge">V2 ✨</span>
+                <h2><i class="ico" data-icon="clipboard"></i> Gestor de trabajo</h2>
+                
             </div>
 
             <!-- FORMULARIO -->
             <form class="form-card" id="main-form" aria-label="Formulario de registro">
                 <div class="form-row date-quarter-row">
                     <div class="form-col date-form-col">
-                        <label for="ins-date">📅 Fecha</label>
+                        <label for="ins-date"><i class="ico" data-icon="calendar"></i> Fecha</label>
                         <input type="date" id="ins-date" required aria-label="Fecha de la actuación">
                     </div>
                     <div class="form-col quarter-form-col">
@@ -95,9 +95,9 @@
 
                 <div class="form-row task-role-row">
                     <div class="selector-clicks" id="sel-type" role="group" aria-label="Tipo">
-                        <button type="button" class="clickable-option active" data-type="incidencia" aria-pressed="true">🔴 Inc</button>
-                        <button type="button" class="clickable-option" data-type="peticion" aria-pressed="false">🟠 Pet</button>
-                        <button type="button" class="clickable-option" data-type="explotacion" aria-pressed="false">🟢 Exp</button>
+                        <button type="button" class="clickable-option active" data-type="incidencia" aria-pressed="true"><span class="type-dot inc"></span> Inc</button>
+                        <button type="button" class="clickable-option" data-type="peticion" aria-pressed="false"><span class="type-dot pet"></span> Pet</button>
+                        <button type="button" class="clickable-option" data-type="explotacion" aria-pressed="false"><span class="type-dot exp"></span> Exp</button>
                     </div>
                     <div class="selector-clicks" id="sel-role" role="group" aria-label="Rol"></div>
                 </div>
@@ -117,7 +117,7 @@
                     <input type="text" id="ins-desc" placeholder="Descripción..." aria-label="Descripción">
                 </div>
 
-                <button type="submit" class="btn-add">➕ GUARDAR</button>
+                <button type="submit" class="btn-add"><i class="ico" data-icon="plus"></i> GUARDAR</button>
             </form>
 
             <!-- ACTUACIONES -->
@@ -125,7 +125,7 @@
                 <button class="manager-header" id="actuaciones-header" aria-expanded="true" aria-controls="actuaciones-collapsible">
                     <div class="manager-header-left">
                         <span class="toggle-icon" id="actuaciones-toggle-icon">▼</span>
-                        <h2>📊 ACTUACIONES</h2>
+                        <h2><i class="ico" data-icon="chart"></i> ACTUACIONES</h2>
                         <span class="counter-badge" id="records-count">0</span>
                     </div>
                 </button>
@@ -153,23 +153,23 @@
                 <button class="manager-header" id="tools-header" aria-expanded="false" aria-controls="tools-collapsible">
                     <div class="manager-header-left">
                         <span class="toggle-icon" id="tools-toggle-icon">▶</span>
-                        <h2>⚙️ HERRAMIENTAS</h2>
+                        <h2><i class="ico" data-icon="cog"></i> HERRAMIENTAS</h2>
                     </div>
                 </button>
                 <div id="tools-collapsible" class="collapsible-content collapsed">
                     <div class="tools-content">
                         <div class="tools-group">
                             <button type="button" class="btn-tool" id="btn-report-config" title="Nombre, unidad y localidad del informe impreso">
-                                👤 Datos del informe
+                                <i class="ico" data-icon="user"></i> Datos del informe
                             </button>
                             <button type="button" class="btn-tool" id="btn-export-json">
-                                📥 Exportar
+                                <i class="ico" data-icon="download"></i> Exportar
                             </button>
                             <button type="button" class="btn-tool btn-tool-print" id="btn-print-summary">
-                                🖨️ Resumen
+                                <i class="ico" data-icon="printer"></i> Resumen
                             </button>
                             <button type="button" class="btn-tool btn-tool-print" id="btn-print-full">
-                                📄 Completo
+                                <i class="ico" data-icon="file"></i> Completo
                             </button>
                         </div>
                     </div>
@@ -182,19 +182,19 @@
         <!-- COLUMNA 3: WIDGETS -->
         <aside class="widgets-col" id="colWidgets" role="complementary" aria-label="Notas y listas">
             <div class="block-header">
-                <h2>📌 Notas</h2>
+                <h2><i class="ico" data-icon="pin"></i> Notas</h2>
                 <div class="header-actions notes-actions">
-                    <button type="button" class="btn-top btn-compact" id="btn-new-note" title="Crear nueva nota" aria-label="Nueva nota">📝 Nota</button>
-                    <button type="button" class="btn-top btn-compact" id="btn-new-todo" title="Crear nueva lista" aria-label="Nueva lista">✓ Lista</button>
+                    <button type="button" class="btn-top btn-compact" id="btn-new-note" title="Crear nueva nota" aria-label="Nueva nota"><i class="ico" data-icon="note"></i> Nota</button>
+                    <button type="button" class="btn-top btn-compact" id="btn-new-todo" title="Crear nueva lista" aria-label="Nueva lista"><i class="ico" data-icon="listcheck"></i> Lista</button>
                 </div>
             </div>
 
             <div class="quick-note-box" id="quick-note-box">
                 <div class="quick-note-header" id="quick-note-header" role="button" tabindex="0" aria-expanded="true" aria-controls="quick-note-body" title="Minimizar / expandir">
-                    <span class="quick-note-title"><span class="note-chevron" aria-hidden="true">▼</span> 📝 Bloc rápido</span>
+                    <span class="quick-note-title"><span class="note-chevron" aria-hidden="true"><i class="ico" data-icon="chev"></i></span> <i class="ico" data-icon="note"></i> Bloc de notas</span>
                     <div class="header-actions">
-                        <button type="button" class="btn-action-icon" id="btn-copy-note" title="Copiar" aria-label="Copiar bloc">📋</button>
-                        <button type="button" class="btn-action-icon btn-danger-icon" id="btn-clear-note" title="Limpiar" aria-label="Limpiar bloc">✕</button>
+                        <button type="button" class="btn-action-icon" id="btn-copy-note" title="Copiar" aria-label="Copiar bloc de notas"><i class="ico" data-icon="copy"></i></button>
+                        <button type="button" class="btn-action-icon btn-danger-icon" id="btn-clear-note" title="Limpiar" aria-label="Limpiar bloc de notas"><i class="ico" data-icon="x"></i></button>
                     </div>
                 </div>
                 <div class="note-body" id="quick-note-body">
@@ -216,9 +216,9 @@
 
             <label id="edit-type-label">Tipo</label>
             <div class="edit-type-row" id="edit-type-row" role="group" aria-labelledby="edit-type-label">
-                <button type="button" data-type="incidencia" class="active">🔴 Incidencia</button>
-                <button type="button" data-type="peticion">🟠 Petición</button>
-                <button type="button" data-type="explotacion">🟢 Explotación</button>
+                <button type="button" data-type="incidencia" class="active"><span class="type-dot inc"></span> Incidencia</button>
+                <button type="button" data-type="peticion"><span class="type-dot pet"></span> Petición</button>
+                <button type="button" data-type="explotacion"><span class="type-dot exp"></span> Explotación</button>
             </div>
 
             <label id="edit-role-label">Participación</label>
@@ -356,6 +356,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=2.5.2"></script>
+    <script src="app.js?v=2.6.0"></script>
 </body>
 </html>
