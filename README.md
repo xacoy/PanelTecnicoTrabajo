@@ -18,3 +18,7 @@ El repositorio solo contiene datos de ejemplo.
 ## Temas y apartados
 
 Menú **⋯** > Tema de color: 18 temas a elegir. Los botones Enlaces / Gestor / Notas de la barra superior muestran u ocultan cada apartado. La versión aparece junto al título.
+
+## Versiones
+
+La versión aparece junto al título. Solo cambia cuando cambia el funcionamiento; los ajustes gráficos no la modifican. Consulta `CHANGELOG.md`.
