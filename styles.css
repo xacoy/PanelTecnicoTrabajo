@@ -2426,18 +2426,10 @@ input[type="checkbox"] {
 
     /* Cuadro de indicadores: cada mes se distingue con su cabecera, su tono de fondo y una línea divisoria gruesa */
     .rp-indicators th#p-m1,
-    .rp-indicators th#p-m3 {
-        background: #1f3a5f;
-        color: #fff;
-    }
-
-    .rp-indicators th#p-m2 {
-        background: #3f6494;
-        color: #fff;
-    }
-
+    .rp-indicators th#p-m2,
+    .rp-indicators th#p-m3,
     .rp-indicators thead tr:first-child th.rp-total-col {
-        background: #5a6578;
+        background: #1f3a5f;
         color: #fff;
     }
 
