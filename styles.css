@@ -2876,3 +2876,32 @@ table.records-table tr.record-row td:first-child {
 table.records-table tr.record-row td:last-child {
     border-radius: 0 3px 3px 0 !important;
 }
+
+/* Menú de tres puntos de categorías, notas y listas */
+.kebab .ico-svg {
+    stroke-width: 3.2;
+}
+
+.action-menu {
+    position: fixed;
+    z-index: 90;
+    min-width: 180px;
+    padding: 4px;
+    display: grid;
+    gap: 2px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-panel);
+    box-shadow: var(--shadow-xl);
+}
+
+.action-menu .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.action-menu .menu-item .ico-svg {
+    width: 15px;
+    height: 15px;
+}

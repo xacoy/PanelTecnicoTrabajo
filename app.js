@@ -356,6 +356,74 @@ const ColorPicker = {
     }
 };
 
+// Menú de tres puntos (⋯) con acciones; se dibuja encima de todo para que ningún panel lo recorte
+const ActionMenu = {
+    current: null,
+
+    button(items, label) {
+        const btn = DomUtils.createEl('button', {
+            class: 'btn-action-icon kebab',
+            html: Icons.svg('more'),
+            attrs: { type: 'button', title: 'Más acciones', 'aria-label': label || 'Más acciones', 'aria-haspopup': 'true', 'aria-expanded': 'false' }
+        });
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const same = this.current && this.current.btn === btn;
+            this.close();
+            if (!same) this.open(btn, items);
+        });
+        return btn;
+    },
+
+    open(btn, items) {
+        const menu = DomUtils.createEl('div', { class: 'action-menu', attrs: { role: 'menu' } });
+        items.forEach(item => {
+            const entry = DomUtils.createEl('button', {
+                class: 'menu-item' + (item.danger ? ' danger' : ''),
+                attrs: { type: 'button', role: 'menuitem' }
+            });
+            entry.innerHTML = Icons.svg(item.icon);
+            entry.appendChild(DomUtils.createEl('span', { text: item.label }));
+            entry.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.close();
+                item.run();
+            });
+            menu.appendChild(entry);
+        });
+        document.body.appendChild(menu);
+
+        const rect = btn.getBoundingClientRect();
+        const w = menu.offsetWidth;
+        const h = menu.offsetHeight;
+        const left = Math.max(8, Math.min(rect.right - w, window.innerWidth - w - 8));
+        const top = rect.bottom + 4 + h > window.innerHeight - 8 ? Math.max(8, rect.top - h - 4) : rect.bottom + 4;
+        menu.style.left = left + 'px';
+        menu.style.top = top + 'px';
+
+        btn.setAttribute('aria-expanded', 'true');
+        this.current = { menu, btn };
+    },
+
+    close() {
+        if (!this.current) return;
+        this.current.menu.remove();
+        this.current.btn.setAttribute('aria-expanded', 'false');
+        this.current = null;
+    },
+
+    init() {
+        document.addEventListener('click', (e) => {
+            if (this.current && !this.current.menu.contains(e.target)) this.close();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') this.close();
+        });
+        window.addEventListener('resize', () => this.close());
+        window.addEventListener('scroll', () => this.close(), true);
+    }
+};
+
 const LinksManager = {
     render() {
         const container = DomUtils.getById('links-container');
@@ -387,30 +455,11 @@ const LinksManager = {
         title.addEventListener('click', () => this.toggleMinimize(catIdx));
 
         const actions = DomUtils.createEl('div', { class: 'header-actions' });
-        const btnEditCat = DomUtils.createEl('button', {
-            class: 'btn-action-icon',
-            html: Icons.svg('pencil'),
-            attrs: { title: 'Editar categoría (nombre y color general)', type: 'button', 'aria-label': 'Editar categoría' }
-        });
-        btnEditCat.addEventListener('click', () => this.openCategoryModal(catIdx));
-
-        const btnAdd = DomUtils.createEl('button', {
-            class: 'btn-action-icon',
-            text: '+',
-            attrs: { title: 'Añadir enlace', type: 'button' }
-        });
-        btnAdd.addEventListener('click', () => this.addLink(catIdx));
-
-        const btnMin = DomUtils.createEl('button', {
-            class: 'btn-action-icon',
-            text: category.min ? '▢' : '—',
-            attrs: { title: 'Minimizar', type: 'button' }
-        });
-        btnMin.addEventListener('click', () => this.toggleMinimize(catIdx));
-
-        actions.appendChild(btnEditCat);
-        actions.appendChild(btnAdd);
-        actions.appendChild(btnMin);
+        actions.appendChild(ActionMenu.button([
+            { icon: 'pencil', label: 'Editar categoría…', run: () => this.openCategoryModal(catIdx) },
+            { icon: 'plus', label: 'Añadir enlace…', run: () => this.addLink(catIdx) },
+            { icon: 'chev', label: category.min ? 'Expandir' : 'Minimizar', run: () => this.toggleMinimize(catIdx) }
+        ], 'Acciones de la categoría'));
         header.appendChild(title);
         header.appendChild(actions);
 
@@ -659,20 +708,10 @@ const WidgetsManager = {
         header.appendChild(title);
 
         const actions = DomUtils.createEl('div', { class: 'header-actions' });
-        const btnEdit = DomUtils.createEl('button', {
-            class: 'btn-action-icon',
-            html: Icons.svg('pencil'),
-            attrs: { title: 'Renombrar', type: 'button', 'aria-label': 'Renombrar nota' }
-        });
-        btnEdit.addEventListener('click', () => this.editTitle(idx));
-        const btnDel = DomUtils.createEl('button', {
-            class: 'btn-action-icon btn-danger-icon',
-            html: Icons.svg('x'),
-            attrs: { title: 'Eliminar', type: 'button', 'aria-label': 'Eliminar nota' }
-        });
-        btnDel.addEventListener('click', () => this.delete(idx));
-        actions.appendChild(btnEdit);
-        actions.appendChild(btnDel);
+        actions.appendChild(ActionMenu.button([
+            { icon: 'pencil', label: 'Renombrar…', run: () => this.editTitle(idx) },
+            { icon: 'trash', label: 'Eliminar', danger: true, run: () => this.delete(idx) }
+        ], 'Acciones de la nota'));
         header.appendChild(actions);
 
         const body = DomUtils.createEl('div', { class: 'note-body' });
@@ -786,20 +825,10 @@ const WidgetsManager = {
         header.appendChild(title);
 
         const actions = DomUtils.createEl('div', { class: 'header-actions' });
-        const btnEdit = DomUtils.createEl('button', {
-            class: 'btn-action-icon',
-            html: Icons.svg('pencil'),
-            attrs: { title: 'Renombrar', type: 'button', 'aria-label': 'Renombrar lista' }
-        });
-        btnEdit.addEventListener('click', () => this.editTitle(idx));
-        const btnDel = DomUtils.createEl('button', {
-            class: 'btn-action-icon btn-danger-icon',
-            html: Icons.svg('x'),
-            attrs: { title: 'Eliminar', type: 'button', 'aria-label': 'Eliminar lista' }
-        });
-        btnDel.addEventListener('click', () => this.delete(idx));
-        actions.appendChild(btnEdit);
-        actions.appendChild(btnDel);
+        actions.appendChild(ActionMenu.button([
+            { icon: 'pencil', label: 'Renombrar…', run: () => this.editTitle(idx) },
+            { icon: 'trash', label: 'Eliminar', danger: true, run: () => this.delete(idx) }
+        ], 'Acciones de la lista'));
         header.appendChild(actions);
 
         const body = DomUtils.createEl('div', { class: 'note-body' });
@@ -911,8 +940,13 @@ const QuickNotes = {
         area.value = Storage.loadQuickNote();
         if (area.dataset.auto === '1') FieldSizes.fit(area);
 
-        DomUtils.getById('btn-copy-note').addEventListener('click', () => this.copy());
-        DomUtils.getById('btn-clear-note').addEventListener('click', () => this.clear());
+        const actions = DomUtils.getById('quick-note-actions');
+        if (!actions.firstChild) {
+            actions.appendChild(ActionMenu.button([
+                { icon: 'copy', label: 'Copiar todo', run: () => this.copy() },
+                { icon: 'x', label: 'Limpiar…', danger: true, run: () => this.clear() }
+            ], 'Acciones del bloc de notas'));
+        }
         area.addEventListener('input', (e) => this.save(e.target.value));
     },
 
@@ -2184,6 +2218,7 @@ const run = (fn) => {
 document.addEventListener('DOMContentLoaded', async () => {
     // El menú "⋯" se activa primero, antes de cargar datos
     run(() => Icons.apply());
+    run(() => ActionMenu.init());
     run(() => MoreMenu.init());
     run(() => LinksManager.initModal());
 

@@ -13,7 +13,7 @@
             if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
         } catch (e) {}
     </script>
-    <link rel="stylesheet" href="styles.css?b=20261103i">
+    <link rel="stylesheet" href="styles.css?b=20261103k">
 </head>
 <body>
     <!-- BARRA SUPERIOR -->
@@ -192,10 +192,7 @@
             <div class="quick-note-box" id="quick-note-box">
                 <div class="quick-note-header" id="quick-note-header" role="button" tabindex="0" aria-expanded="true" aria-controls="quick-note-body" title="Minimizar / expandir">
                     <span class="quick-note-title"><span class="note-chevron" aria-hidden="true"><i class="ico" data-icon="chev"></i></span> <i class="ico" data-icon="note"></i> Bloc de notas</span>
-                    <div class="header-actions">
-                        <button type="button" class="btn-action-icon" id="btn-copy-note" title="Copiar" aria-label="Copiar bloc de notas"><i class="ico" data-icon="copy"></i></button>
-                        <button type="button" class="btn-action-icon btn-danger-icon" id="btn-clear-note" title="Limpiar" aria-label="Limpiar bloc de notas"><i class="ico" data-icon="x"></i></button>
-                    </div>
+                    <div class="header-actions" id="quick-note-actions"></div>
                 </div>
                 <div class="note-body" id="quick-note-body">
                     <textarea class="quick-note-textarea" id="quick-note-area" placeholder="Teléfonos, datos temporales..."></textarea>
@@ -386,6 +383,6 @@
         </section>
     </div>
 
-    <script src="app.js?b=20261103i"></script>
+    <script src="app.js?b=20261103k"></script>
 </body>
 </html>
