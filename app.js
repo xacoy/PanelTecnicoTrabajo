@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.9.3';
+const APP_VERSION = '2.9.4';
 
 // ============================================
 // ICONOS (línea, heredan el color del texto)
@@ -429,7 +429,7 @@ const LinksManager = {
         const container = DomUtils.getById('links-container');
         const badge = DomUtils.getById('categories-count');
 
-        DomUtils.setText(badge, `${State.linkData.length} Categorías`);
+        DomUtils.setText(badge, `${State.linkData.length} ${State.linkData.length === 1 ? 'Categoría' : 'Categorías'}`);
         container.innerHTML = '';
 
         State.linkData.forEach((category, catIdx) => {
@@ -512,20 +512,10 @@ const LinksManager = {
 
         const controls = DomUtils.createEl('div', { class: 'controls-hover' });
 
-        const btnEdit = DomUtils.createEl('button', {
-            text: '✎',
-            attrs: { title: 'Editar', type: 'button' }
-        });
-        btnEdit.addEventListener('click', () => this.editLink(catIdx, linkIdx));
-
-        const btnDel = DomUtils.createEl('button', {
-            text: '✕',
-            attrs: { title: 'Borrar', type: 'button' }
-        });
-        btnDel.addEventListener('click', () => this.deleteLink(catIdx, linkIdx));
-
-        controls.appendChild(btnEdit);
-        controls.appendChild(btnDel);
+        controls.appendChild(ActionMenu.button([
+            { icon: 'pencil', label: 'Editar…', run: () => this.editLink(catIdx, linkIdx) },
+            { icon: 'trash', label: 'Eliminar', danger: true, run: () => this.deleteLink(catIdx, linkIdx) }
+        ], 'Acciones del enlace'));
 
         wrapper.appendChild(linkEl);
         wrapper.appendChild(controls);

@@ -2923,3 +2923,29 @@ table.records-table tr.record-row td:last-child {
     padding-bottom: 8px;
     border-bottom-color: transparent;
 }
+
+/* Menú de tres puntos de cada enlace: sin cuadro, visible al pasar el ratón */
+.controls-hover {
+    background: transparent;
+    border: none;
+    padding: 0;
+    right: 4px;
+    backdrop-filter: none;
+}
+
+.controls-hover .kebab {
+    width: 26px;
+    height: 26px;
+    color: var(--text-muted);
+    background: transparent;
+}
+
+.controls-hover .kebab:hover {
+    background: rgba(var(--primary-rgb), 0.25);
+    color: var(--text-main);
+}
+
+.link-wrapper:focus-within .controls-hover,
+.controls-hover:has(.kebab[aria-expanded="true"]) {
+    display: flex;
+}

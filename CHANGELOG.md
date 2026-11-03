@@ -5,6 +5,9 @@ Criterio de versiones:
 - **Cambio de funcionalidad menor** → número central (2.9.0).
 - **Cambio de interfaz** (sin funcionalidad nueva) → último número (2.9.1).
 
+## 2.9.4
+- Interfaz: los botones de editar y borrar de cada enlace pasan a un menú de tres puntos, sin cuadro oscuro sobre el enlace.
+
 ## 2.9.3
 - Interfaz: se quita el cuadrado de color junto al nombre de la categoría, que se superponía al texto.
 
