@@ -449,18 +449,31 @@ const LinksManager = {
         if (hasColor) categoryDiv.style.setProperty('--cat-color', category.c);
 
         // Encabezado
-        const header = DomUtils.createEl('div', { class: 'category-header' });
+        // Igual que las notas: la cabecera minimiza / expande y la flecha indica el estado
+        const header = DomUtils.createEl('div', {
+            class: 'category-header',
+            attrs: { role: 'button', tabindex: '0', 'aria-expanded': String(!category.min), title: 'Minimizar / expandir' }
+        });
+        const titleWrap = DomUtils.createEl('div', { class: 'category-title-wrap' });
+        titleWrap.appendChild(DomUtils.createEl('span', { class: 'note-chevron', html: Icons.svg('chev'), attrs: { 'aria-hidden': 'true' } }));
         const title = DomUtils.createEl('h3', { text: category.title });
-        title.style.cursor = 'pointer';
-        title.addEventListener('click', () => this.toggleMinimize(catIdx));
+        titleWrap.appendChild(title);
+        header.addEventListener('click', (e) => {
+            if (e.target.closest('.header-actions')) return;
+            this.toggleMinimize(catIdx);
+        });
+        header.addEventListener('keydown', (e) => {
+            if (e.target !== header || (e.key !== 'Enter' && e.key !== ' ')) return;
+            e.preventDefault();
+            this.toggleMinimize(catIdx);
+        });
 
         const actions = DomUtils.createEl('div', { class: 'header-actions' });
         actions.appendChild(ActionMenu.button([
             { icon: 'pencil', label: 'Editar categoría…', run: () => this.openCategoryModal(catIdx) },
-            { icon: 'plus', label: 'Añadir enlace…', run: () => this.addLink(catIdx) },
-            { icon: 'chev', label: category.min ? 'Expandir' : 'Minimizar', run: () => this.toggleMinimize(catIdx) }
+            { icon: 'plus', label: 'Añadir enlace…', run: () => this.addLink(catIdx) }
         ], 'Acciones de la categoría'));
-        header.appendChild(title);
+        header.appendChild(titleWrap);
         header.appendChild(actions);
 
         // Lista de enlaces

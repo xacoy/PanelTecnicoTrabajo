@@ -2905,3 +2905,30 @@ table.records-table tr.record-row td:last-child {
     width: 15px;
     height: 15px;
 }
+
+/* Categorías de enlaces: minimizar / expandir como en las notas */
+.category-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.category-header {
+    cursor: pointer;
+    user-select: none;
+}
+
+.category-header:hover {
+    background: rgba(var(--primary-rgb), 0.08);
+}
+
+.category.minimized .note-chevron {
+    transform: rotate(-90deg);
+}
+
+.category.minimized .category-header {
+    margin-bottom: 0;
+    padding-bottom: 8px;
+    border-bottom-color: transparent;
+}
