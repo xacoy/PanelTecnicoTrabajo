@@ -4,6 +4,7 @@ Criterio de versiones:
 - **Cambio de funcionalidad mayor** → primer número (3.0.0).
 - **Cambio de funcionalidad menor** → número central (2.9.0).
 - **Cambio de interfaz** (sin funcionalidad nueva) → último número (2.9.1).
+- **Corrección de un error** → sufijo `-revN` sobre la versión corregida (2.9.3-rev1). `N` empieza en 1 y se reinicia cuando cambia la versión.
 
 ## 2.9.4
 - Interfaz: los botones de editar y borrar de cada enlace pasan a un menú de tres puntos, sin cuadro oscuro sobre el enlace.
