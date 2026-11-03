@@ -2305,22 +2305,13 @@ input[type="checkbox"] {
         font-weight: 600;
     }
 
+    /* Resumen: el total (suma de las tres categorías) en bloque oscuro; el teletrabajo, aparte */
     .rp-kpis {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        border: 1px solid #7f8ea3;
-        background: #f3f6fa;
+        grid-template-columns: 1.25fr 3fr 1.35fr;
+        align-items: stretch;
         margin-bottom: 14pt;
         break-inside: avoid;
-    }
-
-    .rp-kpis div {
-        padding: 7pt 9pt;
-        text-align: center;
-    }
-
-    .rp-kpis div + div {
-        border-left: 1px solid #7f8ea3;
     }
 
     .rp-kpis b {
@@ -2338,6 +2329,49 @@ input[type="checkbox"] {
         letter-spacing: 0.3pt;
         text-transform: uppercase;
         color: #555;
+    }
+
+    .rp-total {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 8pt 9pt;
+        background: #1f3a5f;
+        border: 1px solid #1f3a5f;
+    }
+
+    .rp-total b {
+        font-size: 24pt;
+        color: #fff;
+    }
+
+    .rp-total span {
+        color: #dbe4f0;
+    }
+
+    .rp-parts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background: #f3f6fa;
+        border: 1px solid #7f8ea3;
+        border-left: 0;
+    }
+
+    .rp-parts div {
+        padding: 8pt 9pt;
+        text-align: center;
+    }
+
+    .rp-parts div + div {
+        border-left: 1px solid #7f8ea3;
+    }
+
+    .rp-tt {
+        margin-left: 10pt;
+        padding: 8pt 9pt;
+        text-align: center;
+        border: 1.5px dashed #7f8ea3;
     }
 
     .rp-title {

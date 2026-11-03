@@ -13,14 +13,14 @@
             if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
         } catch (e) {}
     </script>
-    <link rel="stylesheet" href="styles.css?v=2.8.1">
+    <link rel="stylesheet" href="styles.css?v=2.9.0">
 </head>
 <body>
     <!-- BARRA SUPERIOR -->
     <header class="global-top-bar" role="banner">
         <div class="global-title">
             <i class="ico" data-icon="cog"></i> Panel Técnico
-            <span class="badge-gov" id="app-version" title="Versión">v2.8.1</span>
+            <span class="badge-gov" id="app-version" title="Versión">v2.9.0</span>
         </div>
 
         <div class="top-bar-actions" role="toolbar" aria-label="Acciones globales">
@@ -299,11 +299,13 @@
         </section>
 
         <section class="rp-kpis" aria-label="Resumen del periodo">
-            <div><b id="rp-total">0</b><span>Actuaciones</span></div>
-            <div><b id="rp-inc">0</b><span>Incidencias</span></div>
-            <div><b id="rp-pet">0</b><span>Peticiones</span></div>
-            <div><b id="rp-tar">0</b><span>Tareas</span></div>
-            <div><b id="rp-tt">0</b><span>Teletrabajo (días / con actividad)</span></div>
+            <div class="rp-total"><b id="rp-total">0</b><span>Actuaciones totales</span></div>
+            <div class="rp-parts" role="group" aria-label="Desglose del total de actuaciones">
+                <div><b id="rp-inc">0</b><span>Incidencias</span></div>
+                <div><b id="rp-pet">0</b><span>Peticiones</span></div>
+                <div><b id="rp-tar">0</b><span>Tareas</span></div>
+            </div>
+            <div class="rp-tt"><b id="rp-tt">0</b><span>Días teletrabajo / con actividad</span></div>
         </section>
 
         <h2 class="rp-title">1. Cuadro de indicadores cuantitativos</h2>
@@ -358,6 +360,6 @@
         </section>
     </div>
 
-    <script src="app.js?v=2.8.1"></script>
+    <script src="app.js?v=2.9.0"></script>
 </body>
 </html>
