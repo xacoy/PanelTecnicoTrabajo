@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.9.0';
+const APP_VERSION = '2.9.2';
 
 // ============================================
 // ICONOS (línea, heredan el color del texto)

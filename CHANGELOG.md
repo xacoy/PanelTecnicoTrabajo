@@ -1,6 +1,15 @@
 # Historial de versiones
 
-Criterio: solo sube la versión cuando cambia el **funcionamiento** (el número central en cambios nuevos, el último en correcciones de errores). Los cambios solo gráficos (colores, estilos, iconos, maquetación) no cambian el número.
+Criterio de versiones:
+- **Cambio de funcionalidad mayor** → primer número (3.0.0).
+- **Cambio de funcionalidad menor** → número central (2.9.0).
+- **Cambio de interfaz** (sin funcionalidad nueva) → último número (2.9.1).
+
+## 2.9.2
+- Interfaz: las categorías de enlaces se minimizan y expanden desde la cabecera, con flecha, igual que las notas.
+
+## 2.9.1
+- Interfaz: las acciones de categorías, notas, listas y bloc de notas pasan a un menú de tres puntos.
 
 ## 2.9.0
 - Las categorías de enlaces se pueden editar: nombre y color general, que se aplica a los enlaces sin color propio.

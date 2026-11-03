@@ -21,4 +21,4 @@ Menú **⋯** > Tema de color: 18 temas a elegir. Los botones Enlaces / Gestor /
 
 ## Versiones
 
-La versión aparece junto al título. Solo cambia cuando cambia el funcionamiento; los ajustes gráficos no la modifican. Consulta `CHANGELOG.md`.
+La versión aparece junto al título: funcionalidad mayor sube el primer número, funcionalidad menor el central y un cambio de interfaz el último. Consulta `CHANGELOG.md`.
