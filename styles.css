@@ -2420,7 +2420,7 @@ input[type="checkbox"] {
     }
 
     .rp-table td.rp-total-col {
-        background: #f3f6fa;
+        background: #fff;
         font-weight: 700;
     }
 
@@ -2447,7 +2447,7 @@ input[type="checkbox"] {
     }
 
     .rp-indicators tbody td:not(.rp-first) {
-        background: #f3f6fa;
+        background: #fff;
     }
 
     .rp-indicators td.rp-first {
