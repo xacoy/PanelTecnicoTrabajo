@@ -3,7 +3,7 @@
 // Mejoras: Seguridad XSS, Accesibilidad, Rendimiento, Validación
 // ============================================
 
-const APP_VERSION = '2.5.0';
+const APP_VERSION = '2.5.1';
 
 // ============================================
 // UTILIDADES DE VALIDACIÓN Y SANITIZACIÓN
@@ -532,84 +532,66 @@ const WidgetsManager = {
         Storage.saveWidgets(State.widgets);
     },
 
+    // Las notas usan el mismo estilo que el bloc rápido y las listas
     createWidgetElement(widget, idx) {
-        const div = DomUtils.createEl('div', {
-            class: `widget ${widget.min ? 'minimized' : ''}`
-        });
+        const box = DomUtils.createEl('div', { class: 'quick-note-box note-box' });
 
-        const header = DomUtils.createEl('div', { class: 'widget-header' });
-        header.addEventListener('click', (e) => {
-            this.toggleMinimize(idx);
+        const header = DomUtils.createEl('div', {
+            class: 'quick-note-header',
+            attrs: { role: 'button', tabindex: '0', 'aria-expanded': String(!widget.min), title: 'Minimizar / expandir' }
         });
-
-        const title = DomUtils.createEl('span', {
-            class: 'widget-title',
-            text: widget.title
-        });
+        const title = DomUtils.createEl('span', { class: 'quick-note-title' });
+        title.appendChild(DomUtils.createEl('span', { class: 'note-chevron', text: '▼', attrs: { 'aria-hidden': 'true' } }));
+        title.appendChild(document.createTextNode(' 📄 '));
+        title.appendChild(DomUtils.createEl('span', { class: 'note-title-text', text: widget.title }));
+        header.appendChild(title);
 
         const actions = DomUtils.createEl('div', { class: 'header-actions' });
-
         const btnEdit = DomUtils.createEl('button', {
             class: 'btn-action-icon',
-            text: 'Φ',
-            attrs: { title: 'Renombrar', type: 'button' }
+            text: '✎',
+            attrs: { title: 'Renombrar', type: 'button', 'aria-label': 'Renombrar nota' }
         });
-        btnEdit.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.editTitle(idx);
-        });
-
-        const btnMin = DomUtils.createEl('button', {
-            class: 'btn-action-icon',
-            text: widget.min ? '+' : '-',
-            attrs: { title: 'Minimizar', type: 'button' }
-        });
-        btnMin.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.toggleMinimize(idx);
-        });
-
+        btnEdit.addEventListener('click', () => this.editTitle(idx));
         const btnDel = DomUtils.createEl('button', {
-            class: 'btn-action-icon',
+            class: 'btn-action-icon btn-danger-icon',
             text: '✕',
-            attrs: { title: 'Eliminar', type: 'button', style: 'color:#ef4444' }
+            attrs: { title: 'Eliminar', type: 'button', 'aria-label': 'Eliminar nota' }
         });
-        btnDel.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.delete(idx);
-        });
-
+        btnDel.addEventListener('click', () => this.delete(idx));
         actions.appendChild(btnEdit);
-        actions.appendChild(btnMin);
         actions.appendChild(btnDel);
-
-        header.appendChild(title);
         header.appendChild(actions);
 
-        const content = DomUtils.createEl('div', { class: 'widget-content' });
+        const body = DomUtils.createEl('div', { class: 'note-body' });
+        const textarea = DomUtils.createEl('textarea', {
+            class: 'quick-note-textarea',
+            text: widget.content,
+            attrs: { placeholder: 'Escribe aquí tu nota...' }
+        });
+        if (widget.h) textarea.style.height = widget.h + 'px';
+        else textarea.dataset.auto = '1';
+        FieldSizes.observe(textarea, (h) => {
+            delete textarea.dataset.auto;
+            widget.h = h;
+            Storage.saveWidgets(State.widgets);
+        });
+        textarea.addEventListener('input', (e) => {
+            this.updateNote(idx, e.target.value);
+            if (textarea.dataset.auto === '1') FieldSizes.fit(textarea);
+        });
+        body.appendChild(textarea);
 
-        if (widget.type === 'note') {
-            const textarea = DomUtils.createEl('textarea', {
-                text: widget.content,
-                attrs: { placeholder: 'Escribe aquí tu nota...' }
-            });
-            if (widget.h) textarea.style.height = widget.h + 'px';
-            else textarea.dataset.auto = '1';
-            FieldSizes.observe(textarea, (h) => {
-                delete textarea.dataset.auto;
-                widget.h = h;
-                Storage.saveWidgets(State.widgets);
-            });
-            textarea.addEventListener('input', (e) => {
-                this.updateNote(idx, e.target.value);
-                if (textarea.dataset.auto === '1') FieldSizes.fit(textarea);
-            });
-            content.appendChild(textarea);
-        }
+        box.appendChild(header);
+        box.appendChild(body);
 
-        div.appendChild(header);
-        div.appendChild(content);
-        return div;
+        if (widget.min) box.classList.add('collapsed');
+        box._onToggle = (collapsed) => {
+            widget.min = collapsed;
+            Storage.saveWidgets(State.widgets);
+        };
+        NoteBox.bind(box, header, () => FieldSizes.fitAll());
+        return box;
     },
 
     // Campo de entrada y lista de tareas de una lista to-do
